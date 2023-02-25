@@ -37,6 +37,7 @@ model Parcel {
   status         ParcelStatus
   failureReason  FailureReason?
   driverId       String?
+  isCash         Boolean        @default(false)
 }
 
 model Infraction {
@@ -174,7 +175,6 @@ enum DeliveryType {
   CONTACTLESS
   IN_PERSON
   RETURN
-  CASH_ON_DELIVERY
 }
 
 enum VehicleType {
