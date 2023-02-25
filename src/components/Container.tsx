@@ -9,7 +9,9 @@ const Container: FC<PropsWithChildren<Props>> = ({
   className = "",
 }) => {
   return (
-    <div className={`flex justify-center px-6 ${className} bg-background`}>
+    <div
+      className={`flex justify-center px-6 ${className} min-h-screen bg-background pt-4 pb-20`}
+    >
       <div className="w-full max-w-7xl">{children}</div>
     </div>
   );

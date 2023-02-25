@@ -30,7 +30,7 @@ const Home: NextPage = () => {
 
   return (
     <Container>
-      <div className="flex min-h-screen w-full flex-col items-center justify-center">
+      <div className="flex h-full w-full flex-col items-center justify-center">
         <img src="nv-logo.png" alt="ninjavan logo" />
         <div className="flex w-full flex-col items-center justify-center gap-4 rounded-lg bg-primary px-8 pt-8 pb-12">
           <div className="flex w-full flex-col gap-2">

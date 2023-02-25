@@ -10,7 +10,7 @@ import AppBar from "~/components/AppBar";
 const Orders: NextPage = () => {
   const [search, setSearch] = useState("");
 
-  const parcels = generateParcels(3);
+  const parcels = generateParcels(20);
 
   const handleChangeSearch = (event: ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
@@ -19,7 +19,7 @@ const Orders: NextPage = () => {
   return (
     <>
       <AppBar />
-      <Container className="min-h-screen py-4">
+      <Container className="min-h-screen pt-4 pb-20">
         <div className="text-2xl font-bold">Today&apos;s parcels</div>
         <div className="my-4 flex gap-2">
           <button className="flex items-center gap-2 rounded-md bg-primary py-1 px-3 text-gray-1">
