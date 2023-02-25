@@ -2,6 +2,7 @@ import { type NextPage } from "next";
 import { useRouter } from "next/router";
 import { type ChangeEvent, useState } from "react";
 import Container from "~/components/Container";
+import FullScreenContainer from "~/components/FullScreenContainer";
 
 const DUMMY_USERNAME = "tanAhBee1";
 const DUMMY_PASSWORD = "password123";
@@ -29,8 +30,8 @@ const Home: NextPage = () => {
   };
 
   return (
-    <Container>
-      <div className="flex min-h-screen w-full flex-col items-center justify-center">
+    <FullScreenContainer>
+      <div className="flex h-full w-full flex-col items-center justify-center">
         <img src="nv-logo.png" alt="ninjavan logo" />
         <div className="flex w-full flex-col items-center justify-center gap-4 rounded-lg bg-primary px-8 pt-8 pb-12">
           <div className="flex w-full flex-col gap-2">
@@ -64,7 +65,7 @@ const Home: NextPage = () => {
           Forgot your password?
         </a>
       </div>
-    </Container>
+    </FullScreenContainer>
   );
 };
 

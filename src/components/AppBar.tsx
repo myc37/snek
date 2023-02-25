@@ -6,15 +6,15 @@ const AppBar: FC = () => {
   const router = useRouter();
 
   return (
-    <div className="fixed bottom-0 left-0 flex h-16 w-screen items-center justify-around bg-gradient-to-b from-primary-light to-primary px-6">
+    <div className="fixed bottom-0 left-0 z-10 flex h-16 w-screen items-center justify-around bg-gradient-to-b from-primary-light to-primary px-6">
       <div
         className={`flex cursor-pointer flex-col items-center ${
-          router.pathname === "/history" ? "text-white" : "text-gray"
+          router.pathname === "/earnings" ? "text-white" : "text-gray"
         }`}
-        onClick={() => void router.push("/history")}
+        onClick={() => void router.push("/earnings")}
       >
         <BiDollar className="text-3xl" />
-        History
+        Earnings
       </div>
       <div
         className={`flex cursor-pointer flex-col items-center ${
