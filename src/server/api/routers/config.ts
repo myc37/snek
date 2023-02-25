@@ -14,6 +14,7 @@ export const configsRouter = createTRPCRouter({
 
       const vehicleConfigs = await prisma.vehicleConf.findMany({
         where: { country: country },
+        include: { incentivePayStructures: true },
       });
 
       const vehicleTypeToConfigMap: Record<VehicleType, VehicleConf> =
