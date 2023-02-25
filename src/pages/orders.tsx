@@ -6,6 +6,7 @@ import { api } from "~/utils/api";
 import { generateParcels } from "~/utils/parcels";
 import { type ChangeEvent, useState } from "react";
 import AppBar from "~/components/AppBar";
+import FullScreenContainer from "~/components/FullScreenContainer";
 
 const Orders: NextPage = () => {
   const [search, setSearch] = useState("");
@@ -19,7 +20,7 @@ const Orders: NextPage = () => {
   return (
     <>
       <AppBar />
-      <Container className="min-h-screen pt-4 pb-20">
+      <FullScreenContainer>
         <div className="text-2xl font-bold">Today&apos;s parcels</div>
         <div className="my-4 flex gap-2">
           <button className="flex items-center gap-2 rounded-md bg-primary py-1 px-3 text-gray-1">
@@ -50,7 +51,7 @@ const Orders: NextPage = () => {
             <Parcel key={parcel.trackingNumber} parcel={parcel} />
           ))}
         </div>
-      </Container>
+      </FullScreenContainer>
     </>
   );
 };
