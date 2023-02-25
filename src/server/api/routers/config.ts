@@ -1,7 +1,12 @@
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { prisma } from "~/server/db";
 import { z } from "zod";
-import { Country, type VehicleConf, type VehicleType } from "@prisma/client";
+import {
+  Country,
+  type IncentivePayStructure,
+  type VehicleConf,
+  type VehicleType,
+} from "@prisma/client";
 
 export const configsRouter = createTRPCRouter({
   getConfigByCountry: publicProcedure
@@ -17,10 +22,12 @@ export const configsRouter = createTRPCRouter({
         include: { incentivePayStructures: true },
       });
 
-      const vehicleTypeToConfigMap: Record<VehicleType, VehicleConf> =
-        vehicleConfigs.reduce((prev, curr) => {
-          return { ...prev, [curr.vehicleType]: curr };
-        }, {} as Record<VehicleType, VehicleConf>);
+      const vehicleTypeToConfigMap: Record<
+        VehicleType,
+        VehicleConf & IncentivePayStructure[]
+      > = vehicleConfigs.reduce((prev, curr) => {
+        return { ...prev, [curr.vehicleType]: curr };
+      }, {} as Record<VehicleType, VehicleConf & IncentivePayStructure[]>);
 
       return { ...countryConfig, vehicleConfig: vehicleTypeToConfigMap };
     }),
