@@ -18,6 +18,8 @@ model Driver {
   parcels        Parcel[]
   questInstances QuestInstance[]
   infraction     Infraction[]
+  minimumGoal    Int
+  country        Country
 }
 
 model Parcel {
@@ -46,11 +48,12 @@ model Infraction {
 
 model Quest {
   questId                      String          @id @default(auto()) @map("_id") @db.ObjectId
+  title                        String
   type                         QuestType
   targetPercentage             Int?
-  title                        String
-  value                        Int?
-  questInstance                QuestInstance[]
+  targetValue                  Int?
+  bonusAmount                  Float
+  questInstances               QuestInstance[]
   countryConfig                CountryConf     @relation(fields: [countryConfigCountryConfigId], references: [countryConfigId])
   countryConfigCountryConfigId String          @db.ObjectId
   frequency                    QuestFreq
@@ -61,10 +64,10 @@ model QuestInstance {
   date            DateTime
   driver          Driver   @relation(fields: [driverId], references: [id])
   quest           Quest    @relation(fields: [questId], references: [questId])
-  isComplete      Boolean
-
-  driverId String @db.ObjectId
-  questId  String @db.ObjectId
+  driverId        String   @db.ObjectId
+  questId         String   @db.ObjectId
+  currentValue    Int?
+  isCompleted     Boolean  @default(false)
 }
 
 model VehicleConf {
