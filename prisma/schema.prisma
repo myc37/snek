@@ -26,7 +26,7 @@ model Driver {
 }
 
 model Parcel {
-  trackingNumber String        @id @default(dbgenerated("'T' || substr(uuid_generate_v4()::text, 2)"))
+  trackingNumber String        @id @default(uuid())
   assignedDate   DateTime
   deliveryDate   DateTime?
   size           Size
