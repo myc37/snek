@@ -2,46 +2,142 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "mongodb"
-    url      = env("DATABASE_URL")
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 model Driver {
-    id            String @id @default(auto()) @map("_id") @db.ObjectId
-    licenseNumber String
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  licenseNumber  String
+  vehicleType    VehicleType
+  homeStation    String
+  parcels        Parcel[]
+  questInstances QuestInstance[]
+  infraction     Infraction[]
 }
 
 model Parcel {
-    trackingNumber String       @id @default(auto()) @map("_id") @db.ObjectId
-    assignedDate   DateTime
-    deliveryDate   DateTime
-    size           Size
-    recipientName  String
-    address        String
-    type           DeliveryType
+  trackingNumber String        @id @default(auto()) @map("_id") @db.ObjectId
+  assignedDate   DateTime
+  deliveryDate   DateTime?
+  size           Size
+  recipientName  String
+  address        String
+  type           DeliveryType
+  isCash         Boolean
+  driver         Driver        @relation(fields: [driverId], references: [id])
+  status         ParcelStatus
+  failureReason  FailureReason
+
+  driverId String @db.ObjectId
+}
+
+model Infraction {
+  infractionId String         @id @default(auto()) @map("_id") @db.ObjectId
+  type         InfractionType
+  date         DateTime
+  driver       Driver         @relation(fields: [driverId], references: [id])
+  driverId     String         @db.ObjectId
+}
+
+model Quest {
+  questId                      String          @id @default(auto()) @map("_id") @db.ObjectId
+  type                         QuestType
+  targetPercentage             Int?
+  title                        String
+  value                        Int?
+  questInstance                QuestInstance[]
+  countryConfig                CountryConfig   @relation(fields: [countryConfigCountryConfigId], references: [countryConfigId])
+  countryConfigCountryConfigId String          @db.ObjectId
+  frequency                    QuestFreq
+}
+
+model QuestInstance {
+  questInstanceId String   @id @default(auto()) @map("_id") @db.ObjectId
+  date            DateTime
+  driver          Driver   @relation(fields: [driverId], references: [id])
+  quest           Quest    @relation(fields: [questId], references: [questId])
+  isComplete      Boolean
+
+  driverId String @db.ObjectId
+  questId  String @db.ObjectId
+}
+
+model VehicleConfig {
+  vehicleConfigId       String @id @default(auto()) @map("_id") @db.ObjectId
+  baseSalary            Int
+  incentivePayStructure Json
+  sizeBonus             Json
+  cashOnDeliveryBonus   Int
+  accessibilityBonus    Int
+  priorityBonus         Int
+  timeSlotBonus         Int
+}
+
+model CountryConfig {
+  country                Country @unique
+  countryConfigId        String  @id @default(auto()) @map("_id") @db.ObjectId
+  quests                 Quest[]
+  isInfractionVisible    Boolean
+  infractionPayStructure Json
+}
+
+enum Country {
+  SG
+  MY
+  TH
+  IN
+  VN
+  PH
+}
+
+enum QuestFreq {
+  DAILY
+  REPEATABLE
+}
+
+enum QuestType {
+  ATTENDANCE
+  SUCCESSFUL
+}
+
+enum InfractionType {
+  FAKE_FAILURE
+  NO_PROOF_OF_RECEIPT
+}
+
+enum FailureReason {
+  CANNOT_MAKE_IT
+  NOT_HOME
+}
+
+enum ParcelStatus {
+  UNDELIVERED
+  ATTEMPTED
+  DELIVERED
 }
 
 enum Size {
-    XS
-    S
-    M
-    L
+  XS
+  S
+  M
+  L
 }
 
 enum DeliveryType {
-    CONTACTLESS
-    IN_PERSON
-    RETURN
+  CONTACTLESS
+  IN_PERSON
+  RETURN
 }
 
 enum VehicleType {
-    VAN
-    MOTORCYCLE
-    CAR_SEDAN
-    CAR_SUV
-    LORRY
+  VAN
+  MOTORCYCLE
+  CAR_SEDAN
+  CAR_SUV
+  LORRY
 }
