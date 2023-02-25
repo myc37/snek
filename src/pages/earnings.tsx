@@ -15,21 +15,31 @@ import { addCurrency, formatNumbersWithCommas } from "~/utils/numbers";
 
 const History: NextPage = () => {
   const currentMonth = months[new Date().getMonth()] as Month;
-  const potentialEarnings = 3700;
+  const { data: potentialEarnings, isLoading: isLoadingMinimumGoal } =
+    api.drivers.getMinimumGoalByDriverId.useQuery({
+      driverId: DUMMY_DRIVER_ID,
+    });
 
-  const barProgress = Math.round(Math.random() * 100 + 1);
+  const { data: parcelsCompleted, isLoading: isLoadingCompleted } =
+    api.parcels.getCompletedByDriverId.useQuery({
+      driverId: DUMMY_DRIVER_ID,
+    });
 
   const { data: countryConfig, isLoading: isLoadingConfig } =
     api.config.getConfigByCountry.useQuery({ country: "SG" });
   const basePay = countryConfig?.vehicleConfig.VAN.baseSalary ?? 2500;
 
+  //TODO:
+  const barProgress =
+    (parcelsCompleted / countryConfig?.vehicleConfig.VAN.baseSalary) * 100;
+
   const { data: quantityBonus, isLoading: isLoadingQuantityBonus } =
-    api.driver.getQtyBonusByDriverId.useQuery({
+    api.drivers.getQtyBonusByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,
     });
 
   const { data: bonusData, isLoading: isLoadingTypeBonus } =
-    api.driver.getTypeBonusByDriverId.useQuery({
+    api.drivers.getTypeBonusByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,
     });
   const { bonusesTotal, bonusesArray } = bonusData ?? {
@@ -37,11 +47,13 @@ const History: NextPage = () => {
     bonusesArray: [],
   };
 
-  const questBonus = 200;
-  const questRecords: string[] = [];
+  const { data: questData } = api.quests.getQuestBonusByDriverId.useQuery({
+    driverId: DUMMY_DRIVER_ID,
+  });
+  const { questTotal, questsArray } = questData;
 
   const { data: infractionData, isLoading: isLoadingInfractions } =
-    api.driver.getInfractionsByDriverId.useQuery({
+    api.drivers.getInfractionsByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,
     });
   const { infractionTotal, infractionsArray } = infractionData ?? {
@@ -50,6 +62,8 @@ const History: NextPage = () => {
   };
 
   const isLoading =
+    isLoadingMinimumGoal ||
+    isLoadingCompleted ||
     isLoadingConfig ||
     isLoadingQuantityBonus ||
     isLoadingTypeBonus ||
@@ -58,6 +72,8 @@ const History: NextPage = () => {
   if (isLoading) {
     return <Loading />;
   } else if (
+    parcelsCompleted === undefined ||
+    potentialEarnings === undefined ||
     quantityBonus === undefined ||
     bonusesTotal === undefined ||
     bonusesArray === undefined ||
@@ -119,8 +135,8 @@ const History: NextPage = () => {
 
       <QuestBonus
         currentMonth={currentMonth}
-        questBonus={questBonus}
-        questRecords={questRecords}
+        questBonus={questTotal}
+        questRecords={questsArray}
       />
 
       <Infractions
