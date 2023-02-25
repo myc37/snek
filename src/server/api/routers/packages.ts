@@ -15,11 +15,17 @@ export const packagesRouter = createTRPCRouter({
         },
       });
     }),
-  getCompletedByDriverId: publicProcedure
+  getCompletedCurrentMonthByDriverId: publicProcedure
     .input(z.object({ driverId: z.string() }))
     .query(async ({ input: { driverId } }) => {
       return await prisma.parcel.findMany({
-        where: { driverId, status: "DELIVERED" },
+        where: {
+          driverId,
+          status: "DELIVERED",
+          deliveryDate: {
+            gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+          },
+        },
       });
     }),
   updateStatusByTrackingNumber: publicProcedure

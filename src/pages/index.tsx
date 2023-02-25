@@ -1,14 +1,16 @@
 import { type NextPage } from "next";
-import { ChangeEvent, useState } from "react";
+import { useRouter } from "next/router";
+import { type ChangeEvent, useState } from "react";
 import Container from "~/components/Container";
 
-import { api } from "~/utils/api";
+const DUMMY_USERNAME = "tanAhBee1";
+const DUMMY_PASSWORD = "password123";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
-
-  const [username, setUsername] = useState("tanAhBee1");
-  const [password, setPassword] = useState("password123");
+  const router = useRouter();
+  const [username, setUsername] = useState(DUMMY_USERNAME);
+  const [password, setPassword] = useState(DUMMY_PASSWORD);
+  const [error, setError] = useState("");
 
   const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
@@ -16,6 +18,14 @@ const Home: NextPage = () => {
 
   const handlePasswordChange = (event: ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
+  };
+
+  const handleClickLogin = () => {
+    if (username !== DUMMY_USERNAME && password !== DUMMY_PASSWORD) {
+      setError("The username or password you have input is wrong");
+      return;
+    }
+    void router.push("/orders");
   };
 
   return (
@@ -41,7 +51,13 @@ const Home: NextPage = () => {
             />
           </div>
         </div>
-        <button className="mt-4 w-full cursor-pointer rounded-md bg-secondary px-4 py-2 text-lg font-bold text-gray-1">
+        {Boolean(error) ? (
+          <div className="text-red self-start text-sm">{error}</div>
+        ) : null}
+        <button
+          className="mt-4 w-full cursor-pointer rounded-md bg-secondary px-4 py-2 text-lg font-bold text-gray-1"
+          onClick={handleClickLogin}
+        >
           Sign In
         </button>
         <a className="mt-4 text-sm text-primary underline">

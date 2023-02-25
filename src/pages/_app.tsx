@@ -6,8 +6,8 @@ import MyHead from "~/components/MyHead";
 import { api } from "~/utils/api";
 
 // Styles
-import "~/styles/globals.css";
 import "@fontsource/inter";
+import "~/styles/globals.css";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (

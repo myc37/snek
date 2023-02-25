@@ -51,7 +51,7 @@ model Quest {
   title                        String
   value                        Int?
   questInstance                QuestInstance[]
-  countryConfig                CountryConfig   @relation(fields: [countryConfigCountryConfigId], references: [countryConfigId])
+  countryConfig                CountryConf     @relation(fields: [countryConfigCountryConfigId], references: [countryConfigId])
   countryConfigCountryConfigId String          @db.ObjectId
   frequency                    QuestFreq
 }
@@ -67,7 +67,7 @@ model QuestInstance {
   questId  String @db.ObjectId
 }
 
-model VehicleConfig {
+model VehicleConf {
   vehicleConfigId       String @id @default(auto()) @map("_id") @db.ObjectId
   baseSalary            Int
   incentivePayStructure Json
@@ -76,9 +76,10 @@ model VehicleConfig {
   accessibilityBonus    Int
   priorityBonus         Int
   timeSlotBonus         Int
+  random                String
 }
 
-model CountryConfig {
+model CountryConf {
   countryConfigId        String  @id @default(auto()) @map("_id") @db.ObjectId
   country                Country @unique
   quests                 Quest[]

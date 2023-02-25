@@ -7,25 +7,23 @@ export const configsRouter = createTRPCRouter({
   getConfigByCountry: publicProcedure
     .input(z.object({ country: z.nativeEnum(Country) }))
     .query(async ({ input: { country } }) => {
-      return await prisma.countryConfig.findUnique({ where: { country } });
+      return await prisma.countryConf.findUnique({ where: { country } });
     }),
   putConfigByCountry: publicProcedure
     .input(
       z.object({
         country: z.nativeEnum(Country),
-        isInfractionVisible: z.boolean(),
-        infractionPayStructure: z.any(),
+        countryConfig: z.object({
+          isInfractionVisible: z.boolean(),
+          infractionPayStructure: z.any(),
+        }),
       })
     )
-    .mutation(
-      async ({
-        input: { country, isInfractionVisible, infractionPayStructure },
-      }) => {
-        return await prisma.countryConfig.upsert({
-          where: { country },
-          update: { isInfractionVisible, infractionPayStructure },
-          create: { isInfractionVisible, infractionPayStructure, country },
-        });
-      }
-    ),
+    .mutation(async ({ input: { country, countryConfig } }) => {
+      return await prisma.countryConf.upsert({
+        where: { country },
+        update: countryConfig,
+        create: { ...countryConfig, country },
+      });
+    }),
 });
