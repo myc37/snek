@@ -1,7 +1,12 @@
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { prisma } from "~/server/db";
 import { z } from "zod";
-import { Country, type VehicleConf, type VehicleType } from "@prisma/client";
+import {
+  Country,
+  type InfractionType,
+  type VehicleConf,
+  type VehicleType,
+} from "@prisma/client";
 
 export const configsRouter = createTRPCRouter({
   getConfigByCountry: publicProcedure
@@ -11,6 +16,16 @@ export const configsRouter = createTRPCRouter({
         where: { country },
         include: { infractionPayStructures: true, quests: true },
       });
+
+      if (!countryConfig) throw new Error("Country Config Does Not Exist");
+      const { infractionPayStructures } = countryConfig;
+      const infractionPayMap = infractionPayStructures.reduce((p, c) => {
+        const { infractionType, deduction } = c;
+        return {
+          ...p,
+          [infractionType]: deduction,
+        };
+      }, {} as Record<InfractionType, number>);
 
       const vehicleConfigs = await prisma.vehicleConf.findMany({
         where: { country: country },
@@ -37,7 +52,13 @@ export const configsRouter = createTRPCRouter({
         };
       }, {} as Record<VehicleType, VehicleConf & { incentivePayStructure: Record<number, number> }>);
 
-      return { ...countryConfig, vehicleConfig: vehicleTypeToConfigMap };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { infractionPayStructures: junk, ...rest } = countryConfig;
+      return {
+        ...rest,
+        vehicleConfig: vehicleTypeToConfigMap,
+        infractionPayStructure: infractionPayMap,
+      };
     }),
   putConfigByCountry: publicProcedure
     .input(
