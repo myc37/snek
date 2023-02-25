@@ -11,6 +11,8 @@ async function main() {
     },
   });
 
+  if (!countryConfig) throw new Error("country config not created");
+
   const vehicleConfig = await prisma.vehicleConf.create({
     data: {
       baseSalary: 2000,
@@ -21,6 +23,8 @@ async function main() {
       country: "SG",
     },
   });
+
+  if (!vehicleConfig) throw new Error("veh config not created");
 
   const vehicleConfig2 = await prisma.vehicleConf.create({
     data: {
@@ -33,6 +37,8 @@ async function main() {
     },
   });
 
+  if (!vehicleConfig2) throw new Error("veh config2 not created");
+
   const vehicleConfig3 = await prisma.vehicleConf.create({
     data: {
       baseSalary: 3000,
@@ -44,6 +50,8 @@ async function main() {
     },
   });
 
+  if (!vehicleConfig3) throw new Error("veh config3 not created");
+
   const vehicleConfig4 = await prisma.vehicleConf.create({
     data: {
       baseSalary: 1500,
@@ -54,6 +62,9 @@ async function main() {
       country: "SG",
     },
   });
+
+  if (!vehicleConfig4) throw new Error("veh config4 not created");
+
   // Drivers
 
   const fakeFailureInfraction = await prisma.infractionPayStructure.create({
@@ -66,6 +77,8 @@ async function main() {
     },
   });
 
+  if (!fakeFailureInfraction) throw new Error("ffi not created");
+
   const noReceiptInfraction = await prisma.infractionPayStructure.create({
     data: {
       countryConf: {
@@ -75,6 +88,8 @@ async function main() {
       deduction: 0.1,
     },
   });
+
+  if (!noReceiptInfraction) throw new Error("nri not created");
 
   const incentivePayStructure1 = await prisma.incentivePayStructure.create({
     data: {
@@ -86,6 +101,8 @@ async function main() {
     },
   });
 
+  if (!incentivePayStructure1) throw new Error("ips not created");
+
   const incentivePayStructure2 = await prisma.incentivePayStructure.create({
     data: {
       vehicleConfig: {
@@ -96,6 +113,8 @@ async function main() {
     },
   });
 
+  if (!incentivePayStructure2) throw new Error("ips2 not created");
+
   const incentivePayStructure3 = await prisma.incentivePayStructure.create({
     data: {
       vehicleConfig: {
@@ -105,6 +124,8 @@ async function main() {
       bonusPayment: 100,
     },
   });
+
+  if (!incentivePayStructure3) throw new Error("ips3 not created");
 
   const packageTypeBonusStructure1 =
     await prisma.packageTypeBonusStructure.create({
@@ -117,6 +138,8 @@ async function main() {
       },
     });
 
+  if (!packageTypeBonusStructure1) throw new Error("ptbs1 not created");
+
   const packageTypeBonusStructure2 =
     await prisma.packageTypeBonusStructure.create({
       data: {
@@ -127,6 +150,8 @@ async function main() {
         bonus: 4,
       },
     });
+
+  if (!packageTypeBonusStructure2) throw new Error("ptbs2 not created");
 
   const packageTypeBonusStructure3 =
     await prisma.packageTypeBonusStructure.create({
@@ -139,64 +164,78 @@ async function main() {
       },
     });
 
-  const driver = await prisma.driver.create({
-    data: {
-      licenseNumber: "SWE1234G",
-      homeStation: "Sengkang",
-      vehicleConfig: {
-        connect: { vehicleConfigId: vehicleConfig.vehicleConfigId },
-      },
-      vehicleType: "VAN",
-      minimumGoal: 50,
-      country: "SG",
-    },
-  });
+  if (!packageTypeBonusStructure3) throw new Error("ptbs3 not created");
 
-  for (let i = 0; i < 10; i++) {
-    if (i % 2 == 0) {
-      await prisma.infraction.create({
-        data: {
-          type: "FAKE_FAILURE",
-          driver: { connect: { id: driver.id } },
-          date: new Date(),
-        },
-      });
-    } else if (i % 2 != 0 && i % 3 != 0) {
-      await prisma.infraction.create({
-        data: {
-          type: "NO_PROOF_OF_RECEIPT",
-          driver: { connect: { id: driver.id } },
-          date: new Date(),
-        },
-      });
-    }
-  }
-
-  for (let i = 0; i < 100; i++) {
-    await prisma.parcel.create({
+  await prisma.driver
+    .create({
       data: {
-        assignedDate: new Date(),
-        deliveryDate: i % 4 == 0 ? new Date() : undefined,
-        size: i % 5 == 0 ? (i % 3 == 0 ? (i % 2 == 0 ? "L" : "M") : "S") : "XS",
-        recipientName: faker.name.fullName(),
-        address: faker.address.streetAddress(),
-        type:
-          i % 3 == 0
-            ? i % 2 == 0
-              ? i % 5 == 0
-                ? "CASH_ON_DELIVERY"
-                : "CONTACTLESS"
-              : "IN_PERSON"
-            : "RETURN",
-        driver: i % 2 == 0 ? { connect: { id: driver.id } } : undefined,
-        status:
-          i % 2 == 0 ? (i % 4 == 0 ? "DELIVERED" : "ATTEMPTED") : "UNDELIVERED",
-        failureReason: i % 2 == 0 && i % 4 != 0 ? "CANNOT_MAKE_IT" : undefined,
+        licenseNumber: "SWE1234G",
+        homeStation: "Sengkang",
+        vehicleConfig: {
+          connect: { vehicleConfigId: vehicleConfig.vehicleConfigId },
+        },
+        vehicleType: "VAN",
+        minimumGoal: 50,
+        country: "SG",
       },
-    });
-  }
+    })
+    .then(async (driver) => {
+      if (!driver) throw new Error("driver not created");
+      else console.log("did: ", driver.id);
 
-  // Orders
+      for (let i = 0; i < 10; i++) {
+        if (i % 2 == 0) {
+          const inf = await prisma.infraction.create({
+            data: {
+              type: "FAKE_FAILURE",
+              driver: { connect: { id: driver.id } },
+              date: new Date(),
+            },
+          });
+          if (!inf) throw new Error(`inf ${i} not created`);
+        } else if (i % 2 != 0 && i % 3 != 0) {
+          const inf = await prisma.infraction.create({
+            data: {
+              type: "NO_PROOF_OF_RECEIPT",
+              driver: { connect: { id: driver.id } },
+              date: new Date(),
+            },
+          });
+          if (!inf) throw new Error(`inf ${i} not created`);
+        }
+      }
+
+      for (let i = 0; i < 100; i++) {
+        const parcel = await prisma.parcel.create({
+          data: {
+            assignedDate: new Date(),
+            deliveryDate: i % 4 == 0 ? new Date() : undefined,
+            size:
+              i % 5 == 0 ? (i % 3 == 0 ? (i % 2 == 0 ? "L" : "M") : "S") : "XS",
+            recipientName: faker.name.fullName(),
+            address: faker.address.streetAddress(),
+            type:
+              i % 3 == 0
+                ? i % 2 == 0
+                  ? i % 5 == 0
+                    ? "CASH_ON_DELIVERY"
+                    : "CONTACTLESS"
+                  : "IN_PERSON"
+                : "RETURN",
+            driver: { connect: { id: driver.id } },
+            status:
+              i % 2 == 0
+                ? i % 4 == 0
+                  ? "DELIVERED"
+                  : "ATTEMPTED"
+                : "UNDELIVERED",
+            failureReason:
+              i % 2 == 0 && i % 4 != 0 ? "CANNOT_MAKE_IT" : undefined,
+          },
+        });
+        if (!parcel) throw new Error(`parcel ${i} not created`);
+      }
+    });
 }
 
 main()

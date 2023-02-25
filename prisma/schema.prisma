@@ -36,7 +36,7 @@ model Parcel {
   driver         Driver?        @relation(fields: [driverId], references: [id])
   status         ParcelStatus
   failureReason  FailureReason?
-  driverId       String
+  driverId       String?
 }
 
 model Infraction {
