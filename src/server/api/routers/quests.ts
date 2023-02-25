@@ -42,12 +42,33 @@ export const questsRouter = createTRPCRouter({
     .query(async ({ input: { driverId } }) => {
       const pDriver = prisma.driver.findUnique({ where: { id: driverId } });
       const pQuestProgressions = prisma.questProgression.findMany({
-        where: { driverId },
+        where: {
+          driverId,
+          month: new Date().getMonth(),
+          year: new Date().getFullYear(),
+        },
+        include: { quest: true },
       });
       const [driver, questProgressions] = await Promise.all([
         pDriver,
         pQuestProgressions,
       ]);
-      return [driver, questProgressions];
+
+      if (!driver) throw new Error("Driver does not exist");
+
+      const questBonuses: { title: string; bonus: number }[] =
+        questProgressions.map(({ quest, ...progression }) => {
+          const { bronzeThreshold, silverThreshold, goldThreshold } = quest;
+          let bonus = 0;
+          if (progression.currentProgression >= goldThreshold) {
+            bonus = quest.goldReward;
+          } else if (progression.currentProgression >= silverThreshold) {
+            bonus = quest.silverReward;
+          } else if (progression.currentProgression >= bronzeThreshold) {
+            bonus = quest.bronzeReward;
+          }
+          return { title: quest.title, bonus: bonus };
+        });
+      return questBonuses;
     }),
 });
