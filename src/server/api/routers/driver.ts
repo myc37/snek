@@ -129,7 +129,7 @@ export const driversRouter = createTRPCRouter({
               },
             });
             return (lPackages.length / criteria) * bonus;
-          } else (packageType == "RETURN_PACKAGE") {
+          } else {
             const returnPackages = await prisma.parcel.findMany({
               where: {
                 driverId: driverId,
@@ -148,6 +148,6 @@ export const driversRouter = createTRPCRouter({
           }
         })
       );
-      return bonuses.reduce((prevSum, bonus) => prevSum + bonus)
+      return bonuses.reduce((prevSum, bonus) => prevSum + bonus);
     }),
 });
