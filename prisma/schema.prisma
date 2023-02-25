@@ -51,19 +51,20 @@ model Quest {
   title                        String
   value                        Int?
   QuestInstance                QuestInstance[]
-  countryConfig                CountryConfig @relation(fields: [countryConfigCountryConfigId], references: [countryConfigId])
-  countryConfigCountryConfigId String         @db.ObjectId
+  countryConfig                CountryConfig   @relation(fields: [countryConfigCountryConfigId], references: [countryConfigId])
+  countryConfigCountryConfigId String          @db.ObjectId
 }
 
 model QuestInstance {
-  questInstanceId String   @id @default(auto()) @map("_id") @db.ObjectId
+  questInstanceId String    @id @default(auto()) @map("_id") @db.ObjectId
   date            DateTime
-  driver          Driver   @relation(fields: [driverId], references: [id])
-  quest           Quest    @relation(fields: [questQuestId], references: [questId])
+  driver          Driver    @relation(fields: [driverId], references: [id])
+  quest           Quest     @relation(fields: [questId], references: [questId])
   isComplete      Boolean
+  frequency       QuestFreq
 
-  driverId     String @db.ObjectId
-  questQuestId String @db.ObjectId
+  driverId String @db.ObjectId
+  questId  String @db.ObjectId
 }
 
 model VehicleConfig {
