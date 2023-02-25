@@ -48,6 +48,11 @@ export const driversRouter = createTRPCRouter({
   getInfractionsByDriverId: publicProcedure
     .input(z.object({ driverId: z.string() }))
     .query(async ({ input: { driverId } }) => {
+      const driver = await prisma.driver.findUnique({
+        where: { id: driverId },
+      });
+      if (!driver) throw new Error("Driver does not exist");
+
       const infractions = await prisma.infraction.findMany({
         where: {
           driverId,
@@ -57,27 +62,36 @@ export const driversRouter = createTRPCRouter({
         },
       });
 
-      const infractionTypes = infractions.map((infraction) => infraction.type);
+      const { country } = driver;
 
       const infractionStructures = await prisma.infractionPayStructure.findMany(
         {
-          where: { infractionType: { in: infractionTypes } },
+          where: {
+            countryConf: { country: country },
+          },
         }
       );
 
-      const infractionStructureMap: Record<InfractionType, number> =
-        infractionStructures.reduce((obj, { infractionType, deduction }) => {
-          return {
-            ...obj,
-            [infractionType]: deduction,
-          };
-        }, {} as Record<InfractionType, number>);
-
-      const totalDeduction = infractions.reduce((prev, curr) => {
-        return prev + infractionStructureMap[curr.type];
+      const infractionTotals: [number, InfractionType, number, number][] =
+        infractionStructures.map(({ infractionType, deduction }) => {
+          const infractionsOfType = infractions.filter(
+            (infraction) => infractionType == infraction.type
+          );
+          const deductedForInfraction = infractionsOfType.length * deduction;
+          return [
+            infractionsOfType.length,
+            infractionType,
+            deduction,
+            deductedForInfraction,
+          ];
+        });
+      const infractionResult = infractionTotals.reduce((prev, curr) => {
+        return prev + curr[3];
       }, 0);
-
-      return totalDeduction;
+      return {
+        infractionsArray: infractionTotals,
+        infractionTotal: infractionResult,
+      };
     }),
   getTypeBonusByDriverId: publicProcedure
     .input(z.object({ driverId: z.string() }))
@@ -95,59 +109,67 @@ export const driversRouter = createTRPCRouter({
         where: { vehicleConfigId: vehicleConfig.vehicleConfigId },
       });
 
-      const bonuses = await Promise.all(
-        typeBonuses.map(async ({ criteria, bonus, packageType }) => {
-          if (packageType == "CASH_ON_DELIVERY") {
-            const codPackages = await prisma.parcel.findMany({
-              where: {
-                driverId: driverId,
-                status: "DELIVERED",
-                type: "CASH_ON_DELIVERY",
-                deliveryDate: {
-                  gte: new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    1
-                  ),
+      const bonuses: [number, PackageBonusType, number, number][] =
+        await Promise.all(
+          typeBonuses.map(async ({ bonus, packageType }) => {
+            if (packageType == "CASH_ON_DELIVERY") {
+              const codPackages = await prisma.parcel.findMany({
+                where: {
+                  driverId: driverId,
+                  status: "DELIVERED",
+                  type: "CASH_ON_DELIVERY",
+                  deliveryDate: {
+                    gte: new Date(
+                      new Date().getFullYear(),
+                      new Date().getMonth(),
+                      1
+                    ),
+                  },
                 },
-              },
-            });
-            return (codPackages.length / criteria) * bonus;
-          } else if (packageType == "L_SIZE") {
-            const lPackages = await prisma.parcel.findMany({
-              where: {
-                driverId: driverId,
-                deliveryDate: {
-                  gte: new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    1
-                  ),
+              });
+              const total = codPackages.length * bonus;
+              return [codPackages.length, packageType, bonus, total];
+            } else if (packageType == "L_SIZE") {
+              const lPackages = await prisma.parcel.findMany({
+                where: {
+                  driverId: driverId,
+                  deliveryDate: {
+                    gte: new Date(
+                      new Date().getFullYear(),
+                      new Date().getMonth(),
+                      1
+                    ),
+                  },
+                  size: "L",
+                  status: "DELIVERED",
                 },
-                size: "L",
-                status: "DELIVERED",
-              },
-            });
-            return (lPackages.length / criteria) * bonus;
-          } else {
-            const returnPackages = await prisma.parcel.findMany({
-              where: {
-                driverId: driverId,
-                deliveryDate: {
-                  gte: new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    1
-                  ),
+              });
+              const total = lPackages.length * bonus;
+              return [lPackages.length, packageType, bonus, total];
+            } else {
+              const returnPackages = await prisma.parcel.findMany({
+                where: {
+                  driverId: driverId,
+                  deliveryDate: {
+                    gte: new Date(
+                      new Date().getFullYear(),
+                      new Date().getMonth(),
+                      1
+                    ),
+                  },
+                  type: "RETURN",
+                  status: "DELIVERED",
                 },
-                type: "RETURN",
-                status: "DELIVERED",
-              },
-            });
-            return (returnPackages.length / criteria) * bonus;
-          }
-        })
-      );
-      return bonuses.reduce((prevSum, bonus) => prevSum + bonus);
+              });
+              const total = returnPackages.length * bonus;
+              return [returnPackages.length, packageType, bonus, total];
+            }
+          })
+        );
+
+      const bonusesTotal = bonuses.reduce((prev, curr) => {
+        return prev + curr[3];
+      }, 0);
+      return { bonusesArray: bonuses, bonusesTotal };
     }),
 });
