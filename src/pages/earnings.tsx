@@ -162,7 +162,12 @@ const History: NextPage = () => {
                 Ninja
               </div>
             </Fade>
-            <div className="mt-2 text-sm">+50c per parcel delivered</div>
+            <div className="mt-2 text-sm">
+              <span className="bg-gradient-to-r from-white  to-yellow-400 bg-clip-text font-space-mission tracking-[0.15em] text-transparent">
+                +$0.50
+              </span>{" "}
+              per parcel delivered
+            </div>
           </div>
           <div className=" absolute top-[22rem] left-0 right-0 -bottom-full mx-auto text-center text-sm text-white">
             <div>Next Rank</div>
@@ -179,7 +184,7 @@ const History: NextPage = () => {
           </div>
         </div>
       </Container>
-      <Container className="bg-background pb-20 pt-8">
+      <Container className="min-h-screen bg-background pb-20 pt-8">
         <div className="mb-4 text-2xl font-bold">{`${currentMonth}'s earnings`}</div>
         <div className="mb-4 rounded-md bg-white p-4 shadow-md">
           <div>You are on track to earning</div>
@@ -209,7 +214,7 @@ const History: NextPage = () => {
                 </div>
               </Disclosure.Button>
               <Disclosure.Panel>
-                <div className="flex flex-col gap-2 text-sm text-gray-600 opacity-70">
+                <div className="mb-2 flex flex-col gap-2 text-sm text-gray-600 opacity-70">
                   <div className="flex justify-between">
                     <div>100 parcels x $0.20 (Novice)</div>
                     <div>$50</div>
@@ -233,7 +238,7 @@ const History: NextPage = () => {
                 </div>
               </Disclosure.Button>
               <Disclosure.Panel>
-                <div className="flex flex-col gap-2 text-sm text-gray-600 opacity-70">
+                <div className="mb-2 flex flex-col gap-2 text-sm text-gray-600 opacity-70">
                   {bonusesArray.map((record, idx) => (
                     <div key={idx} className="flex justify-between">
                       <div>{`${record[0] ?? ""} ${
@@ -263,7 +268,7 @@ const History: NextPage = () => {
                 </div>
               </Disclosure.Button>
               <Disclosure.Panel>
-                <div className="flex flex-col gap-2 text-sm text-gray-600 opacity-70">
+                <div className="mb-2 flex flex-col gap-2 text-sm text-gray-600 opacity-70">
                   <div className="flex justify-between">
                     <div>Daily: 18 attendance x $0.50</div>
                     <div>$9</div>
@@ -295,7 +300,7 @@ const History: NextPage = () => {
                 </div>
               </Disclosure.Button>
               <Disclosure.Panel>
-                <div className="flex flex-col gap-2 text-sm text-gray-600 opacity-70">
+                <div className="mb-2 flex flex-col gap-2 text-sm text-gray-600 opacity-70">
                   {infractionsArray.map((infraction, idx) => (
                     <div key={idx} className="flex justify-between">
                       <div>
