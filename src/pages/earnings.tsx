@@ -28,7 +28,7 @@ const History: NextPage = () => {
 
   const { data: countryConfig, isLoading: isLoadingConfig } =
     api.config.getConfigByCountry.useQuery({ country: "SG" });
-  const basePay = countryConfig?.vehicleConfig.VAN.baseSalary ?? 2500;
+  const basePay = (countryConfig?.vehicleConfig.VAN ?? {}).baseSalary ?? 2500;
 
   const parcelMinGoal =
     ((

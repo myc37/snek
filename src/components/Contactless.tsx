@@ -1,8 +1,9 @@
 import { Transition, Dialog } from "@headlessui/react";
-import { Parcel } from "@prisma/client";
+import { type Parcel, ParcelStatus } from "@prisma/client";
 import { Fragment, useCallback, useRef, useState, type FC } from "react";
 import { BiCamera, BiXCircle } from "react-icons/bi";
 import Webcam from "react-webcam";
+import { api } from "~/utils/api";
 
 type Props = {
   isOpen: boolean;

@@ -13,3 +13,7 @@ export const addCurrency = (value: string, country: string) => {
     }
   }
 };
+
+export const isValidNumber = (value: string) => {
+  return !Number.isNaN(Number.parseFloat(value));
+};

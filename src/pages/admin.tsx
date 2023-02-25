@@ -1,5 +1,10 @@
 import { Listbox, Transition } from "@headlessui/react";
-import { Country, VehicleType } from "@prisma/client";
+import {
+  Country,
+  FailureReason,
+  InfractionType,
+  VehicleType,
+} from "@prisma/client";
 import type { NextPage } from "next";
 import { Fragment, useEffect, useState } from "react";
 import { BiCheck, BiChevronDown } from "react-icons/bi";
@@ -8,6 +13,7 @@ import FullScreenContainer from "~/components/FullScreenContainer";
 import Loading from "~/components/Loading";
 import Navbar from "~/components/Navbar";
 import { api } from "~/utils/api";
+import { isValidNumber } from "~/utils/numbers";
 
 const Admin: NextPage = () => {
   const placeholder = "Please select a country";
@@ -132,11 +138,51 @@ const Admin: NextPage = () => {
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col">
                   <div>Fake failure deduction</div>
-                  <input className="mt-2 rounded-md border-2 border-primary p-2" />
+                  <input
+                    className="mt-2 rounded-md border-2 border-primary p-2"
+                    value={
+                      tempConfig.infractionPayStructure[
+                        InfractionType.FAKE_FAILURE
+                      ]
+                    }
+                    // onChange={(e) => {
+                    //   if (isValidNumber(e.target.value)) {
+                    //     setTempConfig({
+                    //       ...tempConfig,
+                    //       infractionPayStructure: {
+                    //         ...tempConfig.infractionPayStructure,
+                    //         [InfractionType.FAKE_FAILURE]: Number.parseInt(
+                    //           e.target.value,
+                    //           10
+                    //         ),
+                    //       },
+                    //     });
+                    //   }
+                    // }}
+                  />
                 </div>
                 <div className="flex flex-col">
                   <div>No proof of receipt deduction</div>
-                  <input className="mt-2 rounded-md border-2 border-primary p-2" />
+                  <input
+                    className="mt-2 rounded-md border-2 border-primary p-2"
+                    value={
+                      tempConfig.infractionPayStructure[
+                        InfractionType.NO_PROOF_OF_RECEIPT
+                      ]
+                    }
+                    // onChange={(e) => {
+                    //   if (isValidNumber(e.target.value)) {
+                    //     setTempConfig({
+                    //       ...tempConfig,
+                    //       infractionPayStructure: {
+                    //         ...tempConfig.infractionPayStructure,
+                    //         [InfractionType.NO_PROOF_OF_RECEIPT]:
+                    //           Number.parseFloat(e.target.value),
+                    //       },
+                    //     });
+                    //   }
+                    // }}
+                  />
                 </div>
               </div>
             </div>
