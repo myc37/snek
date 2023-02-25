@@ -1,17 +1,7 @@
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { prisma } from "~/server/db";
 import { z } from "zod";
-import {
-  Country,
-  type IncentivePayStructure,
-  type VehicleConf,
-  type VehicleType,
-} from "@prisma/client";
-
-type getConfigByCountryReturnType = Record<
-  VehicleType,
-  VehicleConf & { incentivePayStructure: Record<number, number> }
->;
+import { Country, type VehicleConf, type VehicleType } from "@prisma/client";
 
 export const configsRouter = createTRPCRouter({
   getConfigByCountry: publicProcedure
