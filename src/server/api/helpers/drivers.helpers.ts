@@ -6,5 +6,10 @@ export const getDriverMinimumGoal = async (driverId: string) => {
     select: { minimumGoal: true },
   });
 
-  return driver?.minimumGoal ?? 0;
+  if (driver?.minimumGoal) return driver.minimumGoal;
+
+  const parcelsAssignedToDriver = await prisma.parcel.findMany({
+    where: { driverId, assignedDate: new Date() },
+  });
+  return parcelsAssignedToDriver?.length ?? 0;
 };
