@@ -1,17 +1,26 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Transition, Dialog, Listbox } from "@headlessui/react";
-import { type FailureReason } from "@prisma/client";
+import { Parcel, ParcelStatus, type FailureReason } from "@prisma/client";
 import { Fragment, useState, type FC } from "react";
 import { BiCheck, BiChevronDown } from "react-icons/bi";
+import { api } from "~/utils/api";
 
-type Props = { isOpen: boolean; handleCloseReportIssue: () => void };
+type Props = {
+  isOpen: boolean;
+  handleCloseReportIssue: () => void;
+  parcel: Parcel;
+};
 
-const ReportIssue: FC<Props> = ({ isOpen, handleCloseReportIssue }) => {
+const ReportIssue: FC<Props> = ({ isOpen, handleCloseReportIssue, parcel }) => {
+  const updateStatus = api.parcels.updateStatusByTrackingNumber.useMutation();
   const [issueReason, setIssueReason] = useState<FailureReason>("NOT_HOME");
 
   const reportIssue = () => {
-    //TODO:
+    updateStatus.mutate({
+      trackingNumber: parcel.trackingNumber,
+      status: ParcelStatus.ATTEMPTED,
+    });
     handleCloseReportIssue();
   };
 

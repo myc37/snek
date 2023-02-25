@@ -1,6 +1,4 @@
-import { Disclosure, Transition } from "@headlessui/react";
 import type { NextPage } from "next";
-import { BiChevronDown, BiStar } from "react-icons/bi";
 import AppBar from "~/components/AppBar";
 import Container from "~/components/Container";
 import Infractions from "~/components/Infractions";
@@ -8,6 +6,7 @@ import ProgressBar from "~/components/ProgressBar";
 import QuestBonus from "~/components/QuestBonus";
 import TypeBonus from "~/components/TypeBonus";
 import { type Month, months } from "~/types/dates";
+import { api } from "~/utils/api";
 import { addCurrency, formatNumbersWithCommas } from "~/utils/numbers";
 
 const History: NextPage = () => {

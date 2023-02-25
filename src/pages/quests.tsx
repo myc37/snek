@@ -35,7 +35,23 @@ const Quests: NextPage = () => {
       <Container className="min-h-screen pt-4 pb-20">
         <div className="text-2xl font-bold">Quests</div>
         <div className="mt-1 mb-2 text-sm">Do these to earn bonuses!</div>
-        <Quest quest={quest}></Quest>
+        <div className="flex flex-col gap-3">
+          {quests.map((quest) => (
+            <Quest key={quest.questInstanceId} quest={quest}></Quest>
+          ))}
+        </div>
+        {quests.length === 0 ? (
+          <div className="my-10 flex flex-col items-center justify-center">
+            <img
+              src="/ninja-thumbs.png"
+              alt="ninja thumbs up"
+              className="max-w-xs pr-12"
+            />
+            <div className="mt-4 text-center text-lg text-primary">
+              No quests left. Stay tuned for more!
+            </div>
+          </div>
+        ) : null}
       </Container>
     </>
   );
