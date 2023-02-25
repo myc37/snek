@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { NextPage } from "next";
 import AppBar from "~/components/AppBar";
 import Container from "~/components/Container";
@@ -17,36 +18,51 @@ const History: NextPage = () => {
   const potentialEarnings = 3700;
 
   const barProgress = Math.round(Math.random() * 100 + 1);
-  const basePay = 2500;
+
+  const { data: countryConfig, isLoading: isLoadingConfig } =
+    api.config.getConfigByCountry.useQuery({ country: "SG" });
+  const basePay = countryConfig?.vehicleConfig.VAN.baseSalary ?? 2500;
+
   const { data: quantityBonus, isLoading: isLoadingQuantityBonus } =
     api.driver.getQtyBonusByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,
     });
 
-  const bonusRecords = [[25, "L parcel", 2.5, 50]];
-  const { data: typeBonus, isLoading: isLoadingTypeBonus } =
+  const { data: bonusData, isLoading: isLoadingTypeBonus } =
     api.driver.getTypeBonusByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,
     });
+  const { bonusesTotal, bonusesArray } = bonusData ?? {
+    bonusesTotal: 0,
+    bonusesArray: [],
+  };
 
   const questBonus = 200;
   const questRecords: string[] = [];
 
-  const infractionRecords: string[] = [];
-  const { data: infractionAmount, isLoading: isLoadingInfractions } =
+  const { data: infractionData, isLoading: isLoadingInfractions } =
     api.driver.getInfractionsByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,
     });
+  const { infractionTotal, infractionsArray } = infractionData ?? {
+    infractionTotal: 0,
+    infractionsArray: [],
+  };
 
   const isLoading =
-    isLoadingQuantityBonus || isLoadingTypeBonus || isLoadingInfractions;
+    isLoadingConfig ||
+    isLoadingQuantityBonus ||
+    isLoadingTypeBonus ||
+    isLoadingInfractions;
 
   if (isLoading) {
     return <Loading />;
   } else if (
     quantityBonus === undefined ||
-    typeBonus === undefined ||
-    infractionAmount === undefined
+    bonusesTotal === undefined ||
+    bonusesArray === undefined ||
+    infractionTotal === undefined ||
+    infractionsArray === undefined
   ) {
     return <Error />;
   }
@@ -97,8 +113,8 @@ const History: NextPage = () => {
       </Container>
       <TypeBonus
         currentMonth={currentMonth}
-        typeBonus={typeBonus}
-        bonusRecords={bonusRecords}
+        typeBonus={bonusesTotal}
+        bonusRecords={bonusesArray}
       />
 
       <QuestBonus
@@ -109,8 +125,8 @@ const History: NextPage = () => {
 
       <Infractions
         currentMonth={currentMonth}
-        infractionAmount={infractionAmount}
-        infractionRecords={infractionRecords}
+        infractionAmount={infractionTotal}
+        infractionRecords={infractionsArray}
       />
     </>
   );

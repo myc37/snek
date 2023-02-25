@@ -3,6 +3,7 @@ import { parcelsRouter } from "~/server/api/routers/parcels";
 import { questsRouter } from "./routers/quests";
 import { driversRouter as driverRouter } from "./routers/driver";
 import { driversRouter } from "./routers/drivers";
+import { configsRouter } from "./routers/config";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   quests: questsRouter,
   driver: driverRouter,
   drivers: driversRouter,
+  config: configsRouter,
 });
 
 // export type definition of API
