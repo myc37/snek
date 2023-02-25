@@ -9,6 +9,7 @@ import ScanningQr from "~/components/ScanningQr";
 import { type Filter } from "~/types/filter";
 import { initUncheckedFilter } from "~/utils/filter";
 import FilterModal from "~/components/FilterModal";
+import { api } from "~/utils/api";
 
 const Orders: NextPage = () => {
   const [search, setSearch] = useState("");
