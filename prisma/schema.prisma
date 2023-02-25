@@ -26,17 +26,16 @@ model Driver {
 }
 
 model Parcel {
-  trackingNumber String        @id @default(uuid())
+  trackingNumber String         @id @default(uuid())
   assignedDate   DateTime
   deliveryDate   DateTime?
   size           Size
   recipientName  String
   address        String
   type           DeliveryType
-  isCash         Boolean
-  driver         Driver?       @relation(fields: [driverId], references: [id])
+  driver         Driver?        @relation(fields: [driverId], references: [id])
   status         ParcelStatus
-  failureReason  FailureReason
+  failureReason  FailureReason?
   driverId       String
 }
 
@@ -91,7 +90,7 @@ model PackageTypeBonusStructure {
   vehicleConfig   VehicleConf      @relation(fields: [vehicleConfigId], references: [vehicleConfigId])
   vehicleConfigId String
   packageType     PackageBonusType
-  bonus           Int
+  bonus           Float
 
   @@unique([vehicleConfigId, packageType])
 }

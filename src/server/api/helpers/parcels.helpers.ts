@@ -1,4 +1,4 @@
-import { ParcelStatus } from "@prisma/client";
+import { type ParcelStatus } from "@prisma/client";
 import { prisma } from "~/server/db";
 
 export const getCompletedParcelsByDriverId = async (driverId: string) => {
