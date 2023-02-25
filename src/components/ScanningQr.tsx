@@ -3,15 +3,20 @@ import { BiX } from "react-icons/bi";
 import { QrReader } from "react-qr-reader";
 
 type Props = {
+  isOpen: boolean;
   handleCloseScanQr: () => void;
   handleScan: (result: any) => void;
 };
 
-const ScanningQr: FC<Props> = ({ handleCloseScanQr, handleScan }) => {
+const ScanningQr: FC<Props> = ({ isOpen, handleCloseScanQr, handleScan }) => {
   const [error, setError] = useState("");
 
+  if (!isOpen) {
+    return <></>;
+  }
+
   return (
-    <div className="fixed z-50 flex h-screen w-screen flex-col items-center justify-center gap-4 bg-background px-6">
+    <div className="fixed top-0 left-0 z-50 flex h-screen w-screen flex-col items-center justify-center gap-4 bg-background px-6">
       <BiX
         className="absolute top-6 right-6 z-[60] cursor-pointer text-3xl text-primary"
         onClick={handleCloseScanQr}

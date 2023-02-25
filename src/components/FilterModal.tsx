@@ -64,7 +64,7 @@ const FilterModal: FC<Props> = ({
               <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                 <Dialog.Title
                   as="h3"
-                  className="text-lg font-medium leading-6 text-gray-900"
+                  className="text-lg font-bold leading-6 text-gray-900"
                 >
                   Filter parcels
                 </Dialog.Title>
@@ -74,20 +74,22 @@ const FilterModal: FC<Props> = ({
                       <div className="font-bold">{key}</div>
                       <div className="flex flex-col">
                         {value.map((entry) => (
-                          <div className="flex items-center gap-2" key={entry}>
-                            <input
-                              type="checkbox"
-                              checked={Boolean(
-                                (newFilter[key as keyof Filter] as any)[
-                                  entry as any
-                                ]
-                              )}
-                              onChange={generateUpdateFilter(
-                                key as keyof Filter,
-                                entry
-                              )}
-                            />
-                            <label>{entry}</label>
+                          <div key={entry}>
+                            <label className="flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                checked={Boolean(
+                                  (newFilter[key as keyof Filter] as any)[
+                                    entry as any
+                                  ]
+                                )}
+                                onChange={generateUpdateFilter(
+                                  key as keyof Filter,
+                                  entry
+                                )}
+                              />
+                              {entry}
+                            </label>
                           </div>
                         ))}
                       </div>

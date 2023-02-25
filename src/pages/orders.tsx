@@ -52,12 +52,11 @@ const Orders: NextPage = () => {
 
   return (
     <>
-      {isScanningQr ? (
-        <ScanningQr
-          handleCloseScanQr={handleCloseScanQr}
-          handleScan={handleScan}
-        />
-      ) : null}
+      <ScanningQr
+        isOpen={isScanningQr}
+        handleCloseScanQr={handleCloseScanQr}
+        handleScan={handleScan}
+      />
       <FilterModal
         isOpen={isFilterOpen}
         handleClose={handleCloseFilter}
@@ -76,12 +75,8 @@ const Orders: NextPage = () => {
             Scan
           </button>
 
-          <button className="ml-auto flex items-center gap-2 rounded-md bg-primary py-1 px-3 text-gray-1">
-            <BiSortAlt2 />
-            Sort
-          </button>
           <button
-            className="flex items-center gap-2 rounded-md bg-primary py-1 px-3 text-gray-1"
+            className="ml-auto flex items-center gap-2 rounded-md bg-primary py-1 px-3 text-gray-1"
             onClick={handleOpenFilter}
           >
             <BiFilter />
