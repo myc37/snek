@@ -1,5 +1,5 @@
 import { Transition, Dialog } from "@headlessui/react";
-import { Parcel, ParcelStatus } from "@prisma/client";
+import { type Parcel, ParcelStatus } from "@prisma/client";
 import { Fragment, useEffect, useState, type FC } from "react";
 import SignaturePad from "signature_pad";
 import { api } from "~/utils/api";
@@ -13,6 +13,7 @@ type Props = {
 const Signing: FC<Props> = ({ isOpen, handleCloseSigning, parcel }) => {
   const updateStatus = api.parcels.updateStatusByTrackingNumber.useMutation();
   const [signaturePad, setSignaturePad] = useState<SignaturePad | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const canvas = document.querySelector("canvas");
@@ -27,11 +28,22 @@ const Signing: FC<Props> = ({ isOpen, handleCloseSigning, parcel }) => {
   };
 
   const confirmDelivery = () => {
-    updateStatus.mutate({
-      trackingNumber: parcel.trackingNumber,
-      status: ParcelStatus.DELIVERED,
-    });
+    updateStatus.mutate(
+      {
+        trackingNumber: parcel.trackingNumber,
+        status: ParcelStatus.DELIVERED,
+      },
+      {
+        onSuccess: () => {
+          handleCloseSigning();
+          window.location.reload();
+          window.location.reload();
+          setIsLoading(false);
+        },
+      }
+    );
     handleCloseSigning();
+    window.location.reload();
   };
 
   if (!isOpen) {
@@ -81,8 +93,9 @@ const Signing: FC<Props> = ({ isOpen, handleCloseSigning, parcel }) => {
                   <button
                     className="w-full rounded-md border-2 border-primary bg-primary px-4 py-2 text-gray-1"
                     onClick={confirmDelivery}
+                    disabled={isLoading}
                   >
-                    Confirm
+                    {isLoading ? "Loading..." : "Confirm"}
                   </button>
                 </div>
               </Dialog.Panel>

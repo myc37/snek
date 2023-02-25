@@ -15,13 +15,23 @@ const Contactless: FC<Props> = ({ isOpen, handleCloseContactless, parcel }) => {
   const updateStatus = api.parcels.updateStatusByTrackingNumber.useMutation();
   const ref = useRef<Webcam | null>(null);
   const [files, setFiles] = useState<File[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const confirmDelivery = () => {
-    updateStatus.mutate({
-      trackingNumber: parcel.trackingNumber,
-      status: ParcelStatus.DELIVERED,
-    });
-    handleCloseContactless();
+    setIsLoading(true);
+    updateStatus.mutate(
+      {
+        trackingNumber: parcel.trackingNumber,
+        status: ParcelStatus.DELIVERED,
+      },
+      {
+        onSuccess: () => {
+          handleCloseContactless();
+          window.location.reload();
+          setIsLoading(false);
+        },
+      }
+    );
   };
 
   const captureImage = useCallback(() => {
@@ -136,8 +146,9 @@ const Contactless: FC<Props> = ({ isOpen, handleCloseContactless, parcel }) => {
                   <button
                     className="text-md mt-4 w-full rounded-lg border-2 border-primary bg-primary py-2 px-4 text-white"
                     onClick={confirmDelivery}
+                    disabled={isLoading}
                   >
-                    Confirm Delivery
+                    {isLoading ? "Loading..." : "Confirm"}
                   </button>
                 ) : null}
                 <div className="mt-2 text-sm text-gray-600">

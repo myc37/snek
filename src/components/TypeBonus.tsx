@@ -1,14 +1,16 @@
 import { Disclosure, Transition } from "@headlessui/react";
+import { PackageBonusType } from "@prisma/client";
 import { type FC } from "react";
 import { BiChevronDown } from "react-icons/bi";
 import { type Month } from "~/types/dates";
 import { addCurrency, formatNumbersWithCommas } from "~/utils/numbers";
+import { mapBonusType } from "~/utils/strings";
 import Container from "./Container";
 
 type Props = {
   currentMonth: Month;
   typeBonus: number;
-  bonusRecords: Array<Array<string | number>>;
+  bonusRecords: Array<[number, string, number, number]>;
 };
 
 const TypeBonus: FC<Props> = ({ currentMonth, typeBonus, bonusRecords }) => {
@@ -41,12 +43,12 @@ const TypeBonus: FC<Props> = ({ currentMonth, typeBonus, bonusRecords }) => {
                 <div className="mt-4 flex flex-col gap-2">
                   {bonusRecords.map((record, idx) => (
                     <div key={idx}>{`${record[0] ?? ""}x ${
-                      record[1] ?? ""
+                      mapBonusType(record[1] as PackageBonusType) ?? ""
                     } * ${addCurrency(
-                      formatNumbersWithCommas((record[2] as number) ?? 0),
+                      formatNumbersWithCommas(record[2] ?? 0),
                       "SG"
                     )} = ${addCurrency(
-                      formatNumbersWithCommas((record[3] as number) ?? 0),
+                      formatNumbersWithCommas(record[3] ?? 0),
                       "SG"
                     )}`}</div>
                   ))}

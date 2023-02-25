@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { NextPage } from "next";
+import { Fade } from "react-awesome-reveal";
+import CountUp from "react-countup";
 import AppBar from "~/components/AppBar";
 import Container from "~/components/Container";
 import Error from "~/components/Error";
@@ -16,10 +18,6 @@ import { addCurrency, formatNumbersWithCommas } from "~/utils/numbers";
 
 const History: NextPage = () => {
   const currentMonth = months[new Date().getMonth()] as Month;
-  const { data: potentialEarnings, isLoading: isLoadingMinimumGoal } =
-    api.drivers.getMinimumGoalByDriverId.useQuery({
-      driverId: DUMMY_DRIVER_ID,
-    });
 
   const { data: parcelsCompleted, isLoading: isLoadingCompleted } =
     api.parcels.getCompletedByDriverId.useQuery({
@@ -28,7 +26,8 @@ const History: NextPage = () => {
 
   const { data: countryConfig, isLoading: isLoadingConfig } =
     api.config.getConfigByCountry.useQuery({ country: "SG" });
-  const basePay = (countryConfig?.vehicleConfig.VAN ?? {}).baseSalary ?? 2500;
+  let basePay = (countryConfig?.vehicleConfig.VAN ?? {}).baseSalary ?? 2500;
+  basePay = 2500;
 
   const parcelMinGoal =
     ((
@@ -39,7 +38,7 @@ const History: NextPage = () => {
     ).find(([_, val]) => val === 0) ?? [])[0] ?? 200;
 
   const barProgress =
-    (parcelsCompleted ? parcelsCompleted.length : 130 / parcelMinGoal) * 100;
+    ((parcelsCompleted ? parcelsCompleted.length : 130) / parcelMinGoal) * 100;
 
   const { data: quantityBonus, isLoading: isLoadingQuantityBonus } =
     api.drivers.getQtyBonusByDriverId.useQuery({
@@ -50,10 +49,11 @@ const History: NextPage = () => {
     api.drivers.getTypeBonusByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,
     });
-  const { bonusesTotal, bonusesArray } = bonusData ?? {
+  let { bonusesTotal, bonusesArray } = bonusData ?? {
     bonusesTotal: 0,
     bonusesArray: [],
   };
+  bonusesTotal = 2500;
 
   const { data: questData } =
     api.quests.getQuestTotalAndArrayByDriverId.useQuery({
@@ -74,7 +74,6 @@ const History: NextPage = () => {
   };
 
   const isLoading =
-    isLoadingMinimumGoal ||
     isLoadingCompleted ||
     isLoadingConfig ||
     isLoadingQuantityBonus ||
@@ -85,7 +84,6 @@ const History: NextPage = () => {
     return <Loading />;
   } else if (
     parcelsCompleted === undefined ||
-    potentialEarnings === undefined ||
     quantityBonus === undefined ||
     bonusesTotal === undefined ||
     bonusesArray === undefined ||
@@ -95,10 +93,91 @@ const History: NextPage = () => {
     return <Error />;
   }
 
+  // const potentialEarnings =
+  //   basePay + quantityBonus + bonusesTotal + questTotal - infractionTotal;
+  const potentialEarnings = 3540;
+
   return (
     <>
       <AppBar />
-      <Container className="bg-white pt-4">
+      <Container className="flex h-screen flex-col items-center justify-center bg-opacity-70 bg-gradient-radial">
+        <div className="relative -top-20">
+          <div className="absolute -top-[450%] left-0 right-0 mx-auto flex animate-float flex-col items-center justify-center">
+            <div className="w-36">
+              <Fade delay={400} triggerOnce>
+                <img
+                  src="/ninja-money.png"
+                  alt="money boy"
+                  className="w-full"
+                />
+              </Fade>
+            </div>
+            <div
+              className="relative bottom-[98px] z-30 bg-gradient-to-r from-white to-yellow-500 bg-clip-text text-center
+          font-space-mission text-6xl tracking-[0.15em] text-gray-1 text-transparent"
+            >
+              $
+              <CountUp end={3540} duration={3} useEasing />
+            </div>
+          </div>
+          <div className="relative animate-float-slow">
+            <Fade triggerOnce>
+              <div className="relative h-12 w-full overflow-hidden rounded-2xl border-4 border-primary-900 bg-slate-900">
+                <img
+                  src="/bronze-to-silver.png"
+                  className="absolute w-[60%] animate-up-down transition-all"
+                />
+              </div>
+            </Fade>
+            <div className="absolute left-0 right-0 -bottom-full mx-auto text-center text-white">
+              130 delivered
+              <div className="text-xs text-gray-300">
+                (Only 70 more to rank up to Novice Ninja)
+              </div>
+            </div>
+            <div className="absolute -top-[200%] left-0 w-16">
+              <Fade direction="left" delay={100} triggerOnce>
+                <img src="/apprentice-ninja.png" alt="novice" />
+              </Fade>
+            </div>
+            <div className="absolute -top-[200%] right-0 w-16">
+              <Fade direction="right" delay={200} triggerOnce>
+                <img src="/novice-ninja.png" alt="novice" />
+              </Fade>
+            </div>
+          </div>
+          <div className="absolute left-0 right-0 -bottom-full top-40  mx-auto text-center text-2xl text-white">
+            <div>Current Rank</div>
+            <Fade delay={800} big triggerOnce>
+              <div
+                className="mt-4 bg-gradient-to-r
+                 from-white to-apprentice bg-clip-text text-center font-space-mission
+                             text-4xl tracking-[0.15em] text-gray-1 text-transparent
+                "
+              >
+                Apprentice
+                <br />
+                Ninja
+              </div>
+            </Fade>
+            <div className="mt-2 text-sm">+20c per parcel delivered</div>
+          </div>
+          <div className=" absolute top-[22rem] left-0 right-0 -bottom-full mx-auto text-center text-sm text-white">
+            <div>Next Rank</div>
+            <Fade delay={1200} big triggerOnce>
+              <div
+                className="mt-2 bg-gradient-to-r
+                   from-white to-novice bg-clip-text text-center font-space-mission
+                               text-lg tracking-[0.15em] text-gray-1 text-transparent
+                  "
+              >
+                Novice Ninja
+              </div>
+            </Fade>
+          </div>
+        </div>
+      </Container>
+      <Container className="bg-background pt-8">
         <div className="text-2xl font-bold">{`${currentMonth}'s earnings`}</div>
         <div className="my-8">
           <div>You are on track to earning</div>
@@ -135,7 +214,7 @@ const History: NextPage = () => {
           <ProgressBar
             className="mt-10"
             barProgress={barProgress}
-            completedOrders={130}
+            completedOrders={parcelsCompleted.length}
           />
         </div>
       </Container>

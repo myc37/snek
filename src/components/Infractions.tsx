@@ -1,14 +1,16 @@
 import { Disclosure, Transition } from "@headlessui/react";
+import { type InfractionType } from "@prisma/client";
 import { type FC } from "react";
 import { BiChevronDown } from "react-icons/bi";
 import { type Month } from "~/types/dates";
 import { addCurrency, formatNumbersWithCommas } from "~/utils/numbers";
+import { mapInfractionType } from "~/utils/strings";
 import Container from "./Container";
 
 type Props = {
   currentMonth: Month;
   infractionAmount: number;
-  infractionRecords: Array<any>;
+  infractionRecords: Array<[number, string, number, number]>;
 };
 
 const Infractions: FC<Props> = ({
@@ -23,7 +25,7 @@ const Infractions: FC<Props> = ({
           <div className="my-8">
             <Disclosure.Button className="relative flex w-full flex-col">
               <div className="mb-4 text-xl">{`${currentMonth}'s infractions`}</div>
-              <div className="text-3xl">{`${addCurrency(
+              <div className="text-3xl">{`-${addCurrency(
                 formatNumbersWithCommas(infractionAmount),
                 "SG"
               )}`}</div>
@@ -44,7 +46,17 @@ const Infractions: FC<Props> = ({
               <Disclosure.Panel>
                 <div className="mt-4 flex flex-col gap-2">
                   {infractionRecords.map((infraction, idx) => (
-                    <div key={idx}>infraction</div>
+                    <div key={idx}>{`${
+                      infraction[0] ?? ""
+                    }x ${mapInfractionType(
+                      infraction[1] as InfractionType
+                    )} * -${addCurrency(
+                      formatNumbersWithCommas(infraction[2] ?? 0),
+                      "SG"
+                    )} = -${addCurrency(
+                      formatNumbersWithCommas(infraction[3] ?? 0),
+                      "SG"
+                    )}`}</div>
                   ))}
                 </div>
               </Disclosure.Panel>
