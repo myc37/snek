@@ -18,6 +18,6 @@ export const questsRouter = createTRPCRouter({
     .query(async ({ input: { driverId } }) => {
       const questTotal = await getQuestBonusForDriver(driverId);
       const questArray = await getCompletedQuestInstancesForDriver(driverId);
-      return [questTotal, questArray];
+      return { questTotal, questArray };
     }),
 });

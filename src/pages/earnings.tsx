@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { NextPage } from "next";
 import AppBar from "~/components/AppBar";
@@ -29,9 +30,16 @@ const History: NextPage = () => {
     api.config.getConfigByCountry.useQuery({ country: "SG" });
   const basePay = countryConfig?.vehicleConfig.VAN.baseSalary ?? 2500;
 
-  //TODO:
+  const parcelMinGoal =
+    ((
+      Object.entries(
+        countryConfig?.vehicleConfig.VAN.incentivePayStructure ??
+          ({} as Record<number, number>)
+      ) as number[][]
+    ).find(([_, val]) => val === 0) ?? [])[0] ?? 200;
+
   const barProgress =
-    (parcelsCompleted / countryConfig?.vehicleConfig.VAN.baseSalary) * 100;
+    (parcelsCompleted ? parcelsCompleted.length : 130 / parcelMinGoal) * 100;
 
   const { data: quantityBonus, isLoading: isLoadingQuantityBonus } =
     api.drivers.getQtyBonusByDriverId.useQuery({
@@ -47,10 +55,14 @@ const History: NextPage = () => {
     bonusesArray: [],
   };
 
-  const { data: questData } = api.quests.getQuestBonusByDriverId.useQuery({
-    driverId: DUMMY_DRIVER_ID,
-  });
-  const { questTotal, questsArray } = questData;
+  const { data: questData } =
+    api.quests.getQuestTotalAndArrayByDriverId.useQuery({
+      driverId: DUMMY_DRIVER_ID,
+    });
+  const { questTotal, questArray } = questData ?? {
+    questTotal: 0,
+    questArray: [],
+  };
 
   const { data: infractionData, isLoading: isLoadingInfractions } =
     api.drivers.getInfractionsByDriverId.useQuery({
@@ -136,7 +148,7 @@ const History: NextPage = () => {
       <QuestBonus
         currentMonth={currentMonth}
         questBonus={questTotal}
-        questRecords={questsArray}
+        questRecords={questArray}
       />
 
       <Infractions
