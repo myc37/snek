@@ -16,10 +16,6 @@ import { addCurrency, formatNumbersWithCommas } from "~/utils/numbers";
 
 const History: NextPage = () => {
   const currentMonth = months[new Date().getMonth()] as Month;
-  const { data: potentialEarnings, isLoading: isLoadingMinimumGoal } =
-    api.drivers.getMinimumGoalByDriverId.useQuery({
-      driverId: DUMMY_DRIVER_ID,
-    });
 
   const { data: parcelsCompleted, isLoading: isLoadingCompleted } =
     api.parcels.getCompletedByDriverId.useQuery({
@@ -39,7 +35,7 @@ const History: NextPage = () => {
     ).find(([_, val]) => val === 0) ?? [])[0] ?? 200;
 
   const barProgress =
-    (parcelsCompleted ? parcelsCompleted.length : 130 / parcelMinGoal) * 100;
+    ((parcelsCompleted ? parcelsCompleted.length : 130) / parcelMinGoal) * 100;
 
   const { data: quantityBonus, isLoading: isLoadingQuantityBonus } =
     api.drivers.getQtyBonusByDriverId.useQuery({
@@ -74,7 +70,6 @@ const History: NextPage = () => {
   };
 
   const isLoading =
-    isLoadingMinimumGoal ||
     isLoadingCompleted ||
     isLoadingConfig ||
     isLoadingQuantityBonus ||
@@ -85,7 +80,6 @@ const History: NextPage = () => {
     return <Loading />;
   } else if (
     parcelsCompleted === undefined ||
-    potentialEarnings === undefined ||
     quantityBonus === undefined ||
     bonusesTotal === undefined ||
     bonusesArray === undefined ||
@@ -94,6 +88,9 @@ const History: NextPage = () => {
   ) {
     return <Error />;
   }
+
+  const potentialEarnings =
+    basePay + quantityBonus + bonusesTotal + questTotal - infractionTotal;
 
   return (
     <>
@@ -135,7 +132,7 @@ const History: NextPage = () => {
           <ProgressBar
             className="mt-10"
             barProgress={barProgress}
-            completedOrders={130}
+            completedOrders={parcelsCompleted.length}
           />
         </div>
       </Container>
