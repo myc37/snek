@@ -50,18 +50,18 @@ model Quest {
   targetPercentage             Int?
   title                        String
   value                        Int?
-  QuestInstance                QuestInstance[]
+  questInstance                QuestInstance[]
   countryConfig                CountryConfig   @relation(fields: [countryConfigCountryConfigId], references: [countryConfigId])
   countryConfigCountryConfigId String          @db.ObjectId
+  frequency                    QuestFreq
 }
 
 model QuestInstance {
-  questInstanceId String    @id @default(auto()) @map("_id") @db.ObjectId
+  questInstanceId String   @id @default(auto()) @map("_id") @db.ObjectId
   date            DateTime
-  driver          Driver    @relation(fields: [driverId], references: [id])
-  quest           Quest     @relation(fields: [questId], references: [questId])
+  driver          Driver   @relation(fields: [driverId], references: [id])
+  quest           Quest    @relation(fields: [questId], references: [questId])
   isComplete      Boolean
-  frequency       QuestFreq
 
   driverId String @db.ObjectId
   questId  String @db.ObjectId
