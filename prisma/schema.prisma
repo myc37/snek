@@ -11,6 +11,7 @@ datasource db {
 }
 
 model Driver {
+<<<<<<< HEAD
   id             String          @id @default(auto()) @map("_id") @db.ObjectId
   licenseNumber  String
   vehicleType    VehicleType
@@ -88,6 +89,20 @@ enum ParcelStatus {
   UNDELIVERED
   ATTEMPTED
   DELIVERED
+=======
+    id            String @id @default(auto()) @map("_id") @db.ObjectId
+    licenseNumber String
+}
+
+model Parcel {
+    trackingNumber String       @id @default(auto()) @map("_id") @db.ObjectId
+    assignedDate   DateTime
+    deliveryDate   DateTime
+    size           Size
+    recipientName  String
+    address        String
+    type           DeliveryType
+>>>>>>> 0b706403a13e2b55bbb4124edf68214426fe57c3
 }
 
 enum Size {

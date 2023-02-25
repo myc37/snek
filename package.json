@@ -10,6 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@fontsource/inter": "^4.5.15",
     "@headlessui/react": "^1.7.12",
     "@prisma/client": "^4.9.0",
     "@tanstack/react-query": "^4.20.2",
