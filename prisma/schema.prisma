@@ -28,8 +28,11 @@ model Driver {
 model Quest {
   id               Int                @id @default(autoincrement())
   bronzeThreshold  Int
+  bronzeReward     Decimal
   silverThreshold  Int
+  silverReward     Decimal
   goldThreshold    Int
+  goldReward       Decimal
   title            String
   description      String
   QuestProgression QuestProgression[]
@@ -40,9 +43,12 @@ model QuestProgression {
   questId            Int
   driver             Driver @relation(fields: [driverId], references: [id])
   driverId           String
-  currentProgression Int
+  currentProgression Int    @default(0)
+  month              Int
+  year               Int
 
   @@id([questId, driverId])
+  @@unique([month, year])
 }
 
 model Parcel {
