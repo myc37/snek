@@ -72,8 +72,8 @@ export const driversRouter = createTRPCRouter({
         }
       );
 
-      const infractionTotals = infractionStructures.map(
-        ({ infractionType, deduction }) => {
+      const infractionTotals: [number, InfractionType, number, number][] =
+        infractionStructures.map(({ infractionType, deduction }) => {
           const infractionsOfType = infractions.filter(
             (infraction) => infractionType == infraction.type
           );
@@ -84,9 +84,14 @@ export const driversRouter = createTRPCRouter({
             deduction,
             deductedForInfraction,
           ];
-        }
-      );
-      return infractionTotals;
+        });
+      const infractionResult = infractionTotals.reduce((prev, curr) => {
+        return prev + curr[3];
+      }, 0);
+      return {
+        infractionsArray: infractionTotals,
+        infractionTotal: infractionResult,
+      };
     }),
   getTypeBonusByDriverId: publicProcedure
     .input(z.object({ driverId: z.string() }))
@@ -104,62 +109,67 @@ export const driversRouter = createTRPCRouter({
         where: { vehicleConfigId: vehicleConfig.vehicleConfigId },
       });
 
-      const bonuses = await Promise.all(
-        typeBonuses.map(async ({ bonus, packageType }) => {
-          if (packageType == "CASH_ON_DELIVERY") {
-            const codPackages = await prisma.parcel.findMany({
-              where: {
-                driverId: driverId,
-                status: "DELIVERED",
-                type: "CASH_ON_DELIVERY",
-                deliveryDate: {
-                  gte: new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    1
-                  ),
+      const bonuses: [number, PackageBonusType, number, number][] =
+        await Promise.all(
+          typeBonuses.map(async ({ bonus, packageType }) => {
+            if (packageType == "CASH_ON_DELIVERY") {
+              const codPackages = await prisma.parcel.findMany({
+                where: {
+                  driverId: driverId,
+                  status: "DELIVERED",
+                  type: "CASH_ON_DELIVERY",
+                  deliveryDate: {
+                    gte: new Date(
+                      new Date().getFullYear(),
+                      new Date().getMonth(),
+                      1
+                    ),
+                  },
                 },
-              },
-            });
-            const total = codPackages.length * bonus;
-            return [codPackages.length, packageType, bonus, total];
-          } else if (packageType == "L_SIZE") {
-            const lPackages = await prisma.parcel.findMany({
-              where: {
-                driverId: driverId,
-                deliveryDate: {
-                  gte: new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    1
-                  ),
+              });
+              const total = codPackages.length * bonus;
+              return [codPackages.length, packageType, bonus, total];
+            } else if (packageType == "L_SIZE") {
+              const lPackages = await prisma.parcel.findMany({
+                where: {
+                  driverId: driverId,
+                  deliveryDate: {
+                    gte: new Date(
+                      new Date().getFullYear(),
+                      new Date().getMonth(),
+                      1
+                    ),
+                  },
+                  size: "L",
+                  status: "DELIVERED",
                 },
-                size: "L",
-                status: "DELIVERED",
-              },
-            });
-            const total = lPackages.length * bonus;
-            return [lPackages.length, packageType, bonus, total];
-          } else {
-            const returnPackages = await prisma.parcel.findMany({
-              where: {
-                driverId: driverId,
-                deliveryDate: {
-                  gte: new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    1
-                  ),
+              });
+              const total = lPackages.length * bonus;
+              return [lPackages.length, packageType, bonus, total];
+            } else {
+              const returnPackages = await prisma.parcel.findMany({
+                where: {
+                  driverId: driverId,
+                  deliveryDate: {
+                    gte: new Date(
+                      new Date().getFullYear(),
+                      new Date().getMonth(),
+                      1
+                    ),
+                  },
+                  type: "RETURN",
+                  status: "DELIVERED",
                 },
-                type: "RETURN",
-                status: "DELIVERED",
-              },
-            });
-            const total = returnPackages.length * bonus;
-            return [returnPackages.length, packageType, bonus, total];
-          }
-        })
-      );
-      return bonuses;
+              });
+              const total = returnPackages.length * bonus;
+              return [returnPackages.length, packageType, bonus, total];
+            }
+          })
+        );
+
+      const bonusesTotal = bonuses.reduce((prev, curr) => {
+        return prev + curr[3];
+      }, 0);
+      return { bonusesArray: bonuses, bonusesTotal };
     }),
 });
