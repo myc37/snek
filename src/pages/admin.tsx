@@ -13,7 +13,6 @@ import FullScreenContainer from "~/components/FullScreenContainer";
 import Loading from "~/components/Loading";
 import Navbar from "~/components/Navbar";
 import { api } from "~/utils/api";
-import { isValidNumber } from "~/utils/numbers";
 
 const Admin: NextPage = () => {
   const placeholder = "Please select a country";

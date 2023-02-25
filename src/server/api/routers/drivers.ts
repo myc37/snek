@@ -117,7 +117,7 @@ export const driversRouter = createTRPCRouter({
                 where: {
                   driverId: driverId,
                   status: "DELIVERED",
-                  type: "CASH_ON_DELIVERY",
+                  isCash: true,
                   deliveryDate: {
                     gte: new Date(
                       new Date().getFullYear(),

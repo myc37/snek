@@ -217,11 +217,9 @@ async function main() {
             type:
               i % 3 == 0
                 ? i % 2 == 0
-                  ? i % 5 == 0
-                    ? "CASH_ON_DELIVERY"
-                    : "CONTACTLESS"
-                  : "IN_PERSON"
-                : "RETURN",
+                  ? "RETURN"
+                  : "CONTACTLESS"
+                : "IN_PERSON",
             driver: { connect: { id: driver.id } },
             status:
               i % 2 == 0

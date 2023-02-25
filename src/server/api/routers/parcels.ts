@@ -38,9 +38,9 @@ export const parcelsRouter = createTRPCRouter({
       if (status !== "DELIVERED") return;
 
       const questInstances = await getAllQuestInstancesForDriver(
-        parcel.driverId
+        parcel.driverId ?? ""
       );
-      const minimumGoal = await getDriverMinimumGoal(parcel.driverId);
+      const minimumGoal = await getDriverMinimumGoal(parcel.driverId ?? "");
 
       for (const instance of questInstances) {
         if (instance.isCompleted) continue;
@@ -66,7 +66,7 @@ export const parcelsRouter = createTRPCRouter({
           await prisma.questInstance.create({
             data: {
               questId: updatedInstance.questId,
-              driverId: parcel.driverId,
+              driverId: parcel.driverId ?? "",
               isCompleted: false,
               date: new Date(),
             },

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { type Parcel } from ".prisma/client";
 import { type Filter } from "~/types/filter";
 import { isAllUnchecked } from "./filter";
