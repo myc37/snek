@@ -9,7 +9,7 @@ const MyHead: FC = () => {
         name="description"
         content="Ninjavan Last Mile Driver App | Increasing driver satisfaction one delivery at a time"
       />
-      <link rel="icon" href="/favicon.ico" />
+      <link rel="icon" href="/favicon.ico?1" />
 
       <meta name="application-name" content="Ninjavan Last Mile Driver App" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
