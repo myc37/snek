@@ -7,7 +7,7 @@ import {
 } from "@prisma/client";
 import type { NextPage } from "next";
 import { Fragment, useEffect, useState } from "react";
-import { BiCheck, BiChevronDown } from "react-icons/bi";
+import { BiCheck, BiChevronDown, BiPlusCircle } from "react-icons/bi";
 import Error from "~/components/Error";
 import FullScreenContainer from "~/components/FullScreenContainer";
 import Loading from "~/components/Loading";
@@ -139,48 +139,14 @@ const Admin: NextPage = () => {
                   <div>Fake failure deduction</div>
                   <input
                     className="mt-2 rounded-md border-2 border-primary p-2"
-                    value={
-                      tempConfig.infractionPayStructure[
-                        InfractionType.FAKE_FAILURE
-                      ]
-                    }
-                    // onChange={(e) => {
-                    //   if (isValidNumber(e.target.value)) {
-                    //     setTempConfig({
-                    //       ...tempConfig,
-                    //       infractionPayStructure: {
-                    //         ...tempConfig.infractionPayStructure,
-                    //         [InfractionType.FAKE_FAILURE]: Number.parseInt(
-                    //           e.target.value,
-                    //           10
-                    //         ),
-                    //       },
-                    //     });
-                    //   }
-                    // }}
+                    value={-1}
                   />
                 </div>
                 <div className="flex flex-col">
                   <div>No proof of receipt deduction</div>
                   <input
                     className="mt-2 rounded-md border-2 border-primary p-2"
-                    value={
-                      tempConfig.infractionPayStructure[
-                        InfractionType.NO_PROOF_OF_RECEIPT
-                      ]
-                    }
-                    // onChange={(e) => {
-                    //   if (isValidNumber(e.target.value)) {
-                    //     setTempConfig({
-                    //       ...tempConfig,
-                    //       infractionPayStructure: {
-                    //         ...tempConfig.infractionPayStructure,
-                    //         [InfractionType.NO_PROOF_OF_RECEIPT]:
-                    //           Number.parseFloat(e.target.value),
-                    //       },
-                    //     });
-                    //   }
-                    // }}
+                    value={-0.1}
                   />
                 </div>
               </div>
@@ -262,23 +228,45 @@ const Admin: NextPage = () => {
                     <div className="mt-4 flex flex-col gap-4">
                       <div className="flex flex-col">
                         <label>Base salary</label>
-                        <input className="mt-2 rounded-md border-2 border-primary p-2" />
+                        <input
+                          className="mt-2 rounded-md border-2 border-primary p-2"
+                          value={2500}
+                        />
                       </div>
                       <div className="flex flex-col">
                         <label>Cash on delivery bonus</label>
-                        <input className="mt-2 rounded-md border-2 border-primary p-2" />
+                        <input
+                          className="mt-2 rounded-md border-2 border-primary p-2"
+                          value={2}
+                        />
+                      </div>
+                      <div className="flex flex-col">
+                        <label>Return package bonus</label>
+                        <input
+                          className="mt-2 rounded-md border-2 border-primary p-2"
+                          value={1.5}
+                        />
                       </div>
                       <div className="flex flex-col">
                         <label>Accessibility bonus</label>
-                        <input className="mt-2 rounded-md border-2 border-primary p-2" />
+                        <input
+                          className="mt-2 rounded-md border-2 border-primary p-2"
+                          value={4}
+                        />
                       </div>
                       <div className="flex flex-col">
                         <label>Priority bonus</label>
-                        <input className="mt-2 rounded-md border-2 border-primary p-2" />
+                        <input
+                          className="mt-2 rounded-md border-2 border-primary p-2"
+                          value={2.3}
+                        />
                       </div>
                       <div className="flex flex-col">
                         <label>Specific timeslot bonus</label>
-                        <input className="mt-2 rounded-md border-2 border-primary p-2" />
+                        <input
+                          className="mt-2 rounded-md border-2 border-primary p-2"
+                          value={1.5}
+                        />
                       </div>
                       <hr className="border-primary" />
                       <div className="flex flex-col">
@@ -287,20 +275,32 @@ const Admin: NextPage = () => {
                         </div>
                         <div className="flex flex-col">
                           <label>Extra-small package (XS)</label>
-                          <input className="mt-2 rounded-md border-2 border-primary p-2" />
+                          <input
+                            className="mt-2 rounded-md border-2 border-primary p-2"
+                            value={0}
+                          />
                         </div>
                       </div>
                       <div className="flex flex-col">
                         <label>Small package (S)</label>
-                        <input className="mt-2 rounded-md border-2 border-primary p-2" />
+                        <input
+                          className="mt-2 rounded-md border-2 border-primary p-2"
+                          value={0}
+                        />
                       </div>
                       <div className="flex flex-col">
                         <label>Medium package (M)</label>
-                        <input className="mt-2 rounded-md border-2 border-primary p-2" />
+                        <input
+                          className="mt-2 rounded-md border-2 border-primary p-2"
+                          value={0}
+                        />
                       </div>
                       <div className="flex flex-col">
                         <label>Large package (L)</label>
-                        <input className="mt-2 rounded-md border-2 border-primary p-2" />
+                        <input
+                          className="mt-2 rounded-md border-2 border-primary p-2"
+                          value={4}
+                        />
                       </div>
                     </div>
                   </>
@@ -308,6 +308,75 @@ const Admin: NextPage = () => {
               </div>
               <div className="rounded-md border-[3px] border-primary p-4">
                 <div className="mb-4 text-xl">Driver quest configurations</div>
+                <div className="flex flex-col gap-6">
+                  <div className="flex flex-col gap-4 rounded-md bg-white p-4 shadow-md">
+                    <div className="flex flex-col gap-2">
+                      <label>Quest title</label>
+                      <input
+                        value="Daily attendance"
+                        className="rounded-md border-2 border-primary p-2"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label>Quest type</label>
+                      <select className="rounded-md border-2 border-primary p-2">
+                        <option>Daily</option>
+                        <option>Repeating</option>
+                      </select>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label>Quest target</label>
+                      <input
+                        value="100%"
+                        className="rounded-md border-2 border-primary p-2"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label>Quest monetary bonus</label>
+                      <input
+                        value="0.50"
+                        className="rounded-md border-2 border-primary p-2"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-4 rounded-md bg-white p-4 shadow-md">
+                    <div className="flex flex-col gap-2">
+                      <label>Quest title</label>
+                      <input
+                        value="Successfully complete 25 deliveries"
+                        className="rounded-md border-2 border-primary p-2"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label>Quest type</label>
+                      <select className="rounded-md border-2 border-primary p-2">
+                        <option>Repeating</option>
+                      </select>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <label>Quest target</label>
+                      <input
+                        value="25"
+                        className="rounded-md border-2 border-primary p-2"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label>Quest monetary bonus</label>
+                      <input
+                        value="5.00"
+                        className="rounded-md border-2 border-primary p-2"
+                      />
+                    </div>
+                  </div>
+                  <button className="flex w-full items-center justify-center gap-2 bg-white p-4 shadow-md">
+                    <BiPlusCircle className="text-xl text-primary" />
+                    Add Quest
+                  </button>
+                </div>
               </div>
             </div>
           </>
