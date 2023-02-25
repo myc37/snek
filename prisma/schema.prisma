@@ -6,12 +6,43 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
+    provider = "mongodb"
     url      = env("DATABASE_URL")
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Driver {
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+    licenseNumber String 
+}
+
+model Parcel {
+    trackingNumber String @id @default(auto()) @map("_id") @db.ObjectId
+    assignedDate DateTime
+    deliveryDate DateTime
+    size Size
+    recipientName String
+    address String
+    type DeliveryType
+    
+}
+
+enum Size {
+    XS
+    S
+    M
+    L
+}
+
+enum DeliveryType {
+    CONTACTLESS
+    IN_PERSON
+    RETURN
+}
+
+enum VehicleType {
+    VAN
+    MOTORCYCLE
+    CAR_SEDAN
+    CAR_SUV
+    LORRY
 }
