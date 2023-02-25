@@ -11,13 +11,19 @@ import { initUncheckedFilter } from "~/utils/filter";
 import FilterModal from "~/components/FilterModal";
 import { api } from "~/utils/api";
 import { type Parcel } from "@prisma/client";
+import { DUMMY_DRIVER_ID } from "~/utils/constants";
+import Loading from "~/components/Loading";
+import Error from "~/components/Error";
 
 const Orders: NextPage = () => {
   const [search, setSearch] = useState("");
   const [isScanningQr, setIsScanningQr] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filter, setFilter] = useState<Filter>(initUncheckedFilter());
-  const parcels: Parcel[] = [];
+  const { data: parcels, isLoading } =
+    api.parcels.getNonCompletedByDriverId.useQuery({
+      driverId: DUMMY_DRIVER_ID,
+    });
 
   const handleChangeSearch = (event: ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
@@ -49,6 +55,12 @@ const Orders: NextPage = () => {
     setSearch(trackingNumber);
     handleCloseScanQr();
   };
+
+  if (isLoading) {
+    return <Loading />;
+  } else if (parcels === undefined) {
+    return <Error />;
+  }
 
   const filteredParcels = parcels.filter(generateFilterParcel(search, filter));
 
@@ -98,6 +110,18 @@ const Orders: NextPage = () => {
           {filteredParcels.map((parcel) => (
             <ParcelComponent key={parcel.trackingNumber} parcel={parcel} />
           ))}
+          {parcels.length === 0 ? (
+            <div className="my-10 flex flex-col items-center justify-center">
+              <img
+                src="/ninja-thumbs.png"
+                alt="ninja thumbs up"
+                className="max-w-xs pr-12"
+              />
+              <div className="mt-4 text-center text-lg text-primary">
+                No parcels left for today. Good job!
+              </div>
+            </div>
+          ) : null}
         </div>
       </FullScreenContainer>
     </>

@@ -1,10 +1,17 @@
 import type { NextPage } from "next";
 import AppBar from "~/components/AppBar";
 import Container from "~/components/Container";
+import Loading from "~/components/Loading";
+import Error from "~/components/Error";
 import Quest from "~/components/Quest";
 import type { FeQuest } from "~/types/quests";
+import { api } from "~/utils/api";
+import { DUMMY_DRIVER_ID } from "~/utils/constants";
 
 const Quests: NextPage = () => {
+  const { data: quests, isLoading } =
+    api.quests.getAllQuestsByDriverId.useQuery({ driverId: DUMMY_DRIVER_ID });
+
   const quest: FeQuest = {
     title: "Attendance",
     targetPercentage: null,
@@ -15,6 +22,12 @@ const Quests: NextPage = () => {
     isCompleted: false,
     questInstanceId: "23",
   };
+
+  if (isLoading) {
+    return <Loading />;
+  } else if (quests === undefined) {
+    return <Error />;
+  }
 
   return (
     <>
