@@ -127,7 +127,7 @@ const History: NextPage = () => {
               <div className="relative h-12 w-full overflow-hidden rounded-2xl border-4 border-primary-900 bg-slate-900">
                 <img
                   src="/bronze-to-silver.png"
-                  className="absolute w-[60%] animate-up-down transition-all"
+                  className="absolute w-[60%] transition-all"
                 />
               </div>
             </Fade>
