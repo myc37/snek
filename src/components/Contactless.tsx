@@ -1,16 +1,25 @@
 import { Transition, Dialog } from "@headlessui/react";
+import { Parcel } from "@prisma/client";
 import { Fragment, useCallback, useRef, useState, type FC } from "react";
 import { BiCamera, BiXCircle } from "react-icons/bi";
 import Webcam from "react-webcam";
 
-type Props = { isOpen: boolean; handleCloseContactless: () => void };
+type Props = {
+  isOpen: boolean;
+  handleCloseContactless: () => void;
+  parcel: Parcel;
+};
 
-const Contactless: FC<Props> = ({ isOpen, handleCloseContactless }) => {
+const Contactless: FC<Props> = ({ isOpen, handleCloseContactless, parcel }) => {
+  const updateStatus = api.parcels.updateStatusByTrackingNumber.useMutation();
   const ref = useRef<Webcam | null>(null);
   const [files, setFiles] = useState<File[]>([]);
 
   const confirmDelivery = () => {
-    //TODO:
+    updateStatus.mutate({
+      trackingNumber: parcel.trackingNumber,
+      status: ParcelStatus.DELIVERED,
+    });
     handleCloseContactless();
   };
 

@@ -1,10 +1,17 @@
 import { Transition, Dialog } from "@headlessui/react";
+import { Parcel, ParcelStatus } from "@prisma/client";
 import { Fragment, useEffect, useState, type FC } from "react";
 import SignaturePad from "signature_pad";
+import { api } from "~/utils/api";
 
-type Props = { isOpen: boolean; handleCloseSigning: () => void };
+type Props = {
+  isOpen: boolean;
+  handleCloseSigning: () => void;
+  parcel: Parcel;
+};
 
-const Signing: FC<Props> = ({ isOpen, handleCloseSigning }) => {
+const Signing: FC<Props> = ({ isOpen, handleCloseSigning, parcel }) => {
+  const updateStatus = api.parcels.updateStatusByTrackingNumber.useMutation();
   const [signaturePad, setSignaturePad] = useState<SignaturePad | null>(null);
 
   useEffect(() => {
@@ -20,7 +27,10 @@ const Signing: FC<Props> = ({ isOpen, handleCloseSigning }) => {
   };
 
   const confirmDelivery = () => {
-    //TODO:
+    updateStatus.mutate({
+      trackingNumber: parcel.trackingNumber,
+      status: ParcelStatus.DELIVERED,
+    });
     handleCloseSigning();
   };
 

@@ -1,6 +1,7 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { parcelsRouter } from "~/server/api/routers/parcels";
 import { questsRouter } from "./routers/quests";
+import { driversRouter as driverRouter } from "./routers/driver";
 import { driversRouter } from "./routers/drivers";
 
 /**
@@ -11,6 +12,7 @@ import { driversRouter } from "./routers/drivers";
 export const appRouter = createTRPCRouter({
   parcels: parcelsRouter,
   quests: questsRouter,
+  driver: driverRouter,
   drivers: driversRouter,
 });
 

@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { type FC, useState } from "react";
 import { BiX } from "react-icons/bi";
 import { QrReader } from "react-qr-reader";
 
