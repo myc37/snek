@@ -1,18 +1,6 @@
 import { ParcelStatus } from "@prisma/client";
 import { prisma } from "~/server/db";
-
-const getMonthRange = () => {
-  const start = new Date();
-  const end = new Date();
-
-  start.setDate(1);
-  start.setHours(0, 0, 0, 0);
-  end.setMonth(start.getMonth() + 1);
-  end.setDate(1);
-  end.setHours(0, 0, 0, 0);
-
-  return { start, end };
-};
+import { getMonthRange } from "./date.helpers";
 
 export const getCompletedParcelsByDriverId = async (driverId: string) => {
   const { start, end } = getMonthRange();
