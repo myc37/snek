@@ -1,14 +1,14 @@
-import { FC, useState } from "react";
-import { DeliveryType, Parcel, Size } from "~/types/parcels";
+import { type FC, useState } from "react";
 import { Disclosure, Transition } from "@headlessui/react";
 import { BiCamera, BiChevronDown, BiFlag, BiPen } from "react-icons/bi";
 import Signing from "./Signing";
 import Contactless from "./Contactless";
 import ReportIssue from "./ReportIssue";
+import { type DeliveryType, type Parcel, type Size } from "@prisma/client";
 
 type Props = { parcel: Parcel };
 
-const Parcel: FC<Props> = ({ parcel }) => {
+const ParcelComponent: FC<Props> = ({ parcel }) => {
   const [isContactlessOpen, setIsContactlessOpen] = useState(false);
   const [isSigningOpen, setIsSigningOpen] = useState(false);
   const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
@@ -160,4 +160,4 @@ const Parcel: FC<Props> = ({ parcel }) => {
     </>
   );
 };
-export default Parcel;
+export default ParcelComponent;
