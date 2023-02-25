@@ -1,13 +1,27 @@
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { prisma } from "~/server/db";
 import { z } from "zod";
-import { Country } from "@prisma/client";
+import { Country, type VehicleConf, type VehicleType } from "@prisma/client";
 
 export const configsRouter = createTRPCRouter({
   getConfigByCountry: publicProcedure
     .input(z.object({ country: z.nativeEnum(Country) }))
     .query(async ({ input: { country } }) => {
-      return await prisma.countryConf.findUnique({ where: { country } });
+      const countryConfig = await prisma.countryConf.findUnique({
+        where: { country },
+        include: { infractionPayStructures: true, quests: true },
+      });
+
+      const vehicleConfigs = await prisma.vehicleConf.findMany({
+        where: { country: country },
+      });
+
+      const vehicleTypeToConfigMap: Record<VehicleType, VehicleConf> =
+        vehicleConfigs.reduce((prev, curr) => {
+          return { ...prev, [curr.vehicleType]: curr };
+        }, {} as Record<VehicleType, VehicleConf>);
+
+      return { ...countryConfig, vehicleConfig: vehicleTypeToConfigMap };
     }),
   putConfigByCountry: publicProcedure
     .input(
