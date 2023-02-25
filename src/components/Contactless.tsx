@@ -1,13 +1,42 @@
 import { Transition, Dialog } from "@headlessui/react";
-import { Fragment, useEffect, useState, type FC } from "react";
+import { Fragment, useCallback, useRef, useState, type FC } from "react";
+import { BiCamera, BiXCircle } from "react-icons/bi";
+import Webcam from "react-webcam";
 
 type Props = { isOpen: boolean; handleCloseContactless: () => void };
 
 const Contactless: FC<Props> = ({ isOpen, handleCloseContactless }) => {
+  const ref = useRef<Webcam | null>(null);
   const [files, setFiles] = useState<File[]>([]);
 
   const confirmDelivery = () => {
     //TODO:
+    handleCloseContactless();
+  };
+
+  const captureImage = useCallback(() => {
+    if (ref && ref.current) {
+      const imageSrc = ref.current.getScreenshot();
+      if (imageSrc) {
+        void urltoFile(imageSrc, "screenshot.jpeg", "image/jpeg").then((file) =>
+          setFiles((files) => [...files, file])
+        );
+      }
+    }
+  }, [ref]);
+
+  function urltoFile(url: string, filename: string, mimeType: string) {
+    return fetch(url)
+      .then(function (res) {
+        return res.arrayBuffer();
+      })
+      .then(function (buf) {
+        return new File([buf], filename, { type: mimeType });
+      });
+  }
+
+  const closeAndReset = () => {
+    setFiles([]);
     handleCloseContactless();
   };
 
@@ -17,11 +46,7 @@ const Contactless: FC<Props> = ({ isOpen, handleCloseContactless }) => {
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog
-        as="div"
-        className="relative z-10"
-        onClose={handleCloseContactless}
-      >
+      <Dialog as="div" className="relative z-10" onClose={closeAndReset}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -50,25 +75,64 @@ const Contactless: FC<Props> = ({ isOpen, handleCloseContactless }) => {
                   className="text-lg font-bold leading-6 text-gray-900"
                 >
                   Confirming contactless delivery
+                  <div className="mt-1 text-sm text-gray-600">
+                    Please take photos of the parcel, unit number, and floormat
+                  </div>
                 </Dialog.Title>
-                <input
-                  type="file"
-                  accept="image/*;capture=camera"
-                  capture="environment"
-                />
-                <div className="flex w-full gap-4">
+                <div className="my-4">
+                  <Webcam
+                    ref={ref}
+                    // videoConstraints={{
+                    //   facingMode: { exact: "environment" },
+                    // }}
+                  />
+                </div>
+                <div className="flex w-full flex-wrap gap-2">
+                  {files.map((file, idx) => (
+                    <div
+                      key={idx}
+                      style={{ width: "calc(25% - 6px)" }}
+                      className="relative rounded-md"
+                    >
+                      <img src={URL.createObjectURL(file)} alt="image" />
+                      <BiXCircle
+                        className="absolute top-0 right-0 z-10 cursor-pointer rounded-full bg-white text-xl text-red-500"
+                        onClick={() =>
+                          setFiles([
+                            ...files.slice(0, idx),
+                            ...files.slice(idx + 1),
+                          ])
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-4 flex w-full gap-4">
                   <button
                     className="w-full rounded-md border-2 border-primary bg-white px-4 py-2 text-primary"
-                    onClick={handleCloseContactless}
+                    onClick={closeAndReset}
                   >
                     Cancel
                   </button>
                   <button
-                    className="w-full rounded-md border-2 border-primary bg-primary px-4 py-2 text-gray-1"
+                    className="flex w-full items-center gap-2 whitespace-nowrap rounded-md border-2 border-primary bg-primary px-4 py-2 text-gray-1"
+                    onClick={captureImage}
+                  >
+                    <BiCamera />
+                    Take Picture
+                  </button>
+                </div>
+                {files.length > 0 ? (
+                  <button
+                    className="text-md mt-4 w-full rounded-lg border-2 border-primary bg-primary py-2 px-4 text-white"
                     onClick={confirmDelivery}
                   >
-                    Confirm
+                    Confirm Delivery
                   </button>
+                ) : null}
+                <div className="mt-2 text-sm text-gray-600">
+                  Photos will be saved to your gallery after your confirm the
+                  delivery
                 </div>
               </Dialog.Panel>
             </Transition.Child>

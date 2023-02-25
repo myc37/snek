@@ -4,12 +4,14 @@ import { Disclosure, Transition } from "@headlessui/react";
 import { BiCamera, BiChevronDown, BiFlag, BiPen } from "react-icons/bi";
 import Signing from "./Signing";
 import Contactless from "./Contactless";
+import ReportIssue from "./ReportIssue";
 
 type Props = { parcel: Parcel };
 
 const Parcel: FC<Props> = ({ parcel }) => {
   const [isContactlessOpen, setIsContactlessOpen] = useState(false);
   const [isSigningOpen, setIsSigningOpen] = useState(false);
+  const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
 
   const generateTagColour = (type: DeliveryType | Size) => {
     switch (type) {
@@ -56,6 +58,14 @@ const Parcel: FC<Props> = ({ parcel }) => {
     setIsSigningOpen(false);
   };
 
+  const handleOpenReportIssue = () => {
+    setIsReportIssueOpen(true);
+  };
+
+  const handleCloseReportIssue = () => {
+    setIsReportIssueOpen(false);
+  };
+
   return (
     <>
       <Contactless
@@ -63,6 +73,10 @@ const Parcel: FC<Props> = ({ parcel }) => {
         handleCloseContactless={handleCloseContactless}
       />
       <Signing isOpen={isSigningOpen} handleCloseSigning={handleCloseSigning} />
+      <ReportIssue
+        isOpen={isReportIssueOpen}
+        handleCloseReportIssue={handleCloseReportIssue}
+      />
       <Disclosure>
         {({ open }) => (
           <div
@@ -131,7 +145,10 @@ const Parcel: FC<Props> = ({ parcel }) => {
                     In-person
                   </button>
                 </div>
-                <button className="flex w-full items-center justify-center gap-2 bg-background px-2 py-1 text-primary shadow-md">
+                <button
+                  className="flex w-full items-center justify-center gap-2 bg-background px-2 py-1 text-primary shadow-md"
+                  onClick={handleOpenReportIssue}
+                >
                   <BiFlag />
                   Report issue
                 </button>
