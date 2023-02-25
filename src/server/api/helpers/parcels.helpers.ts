@@ -1,4 +1,4 @@
-import { type ParcelStatus } from "@prisma/client";
+import { ParcelStatus } from "@prisma/client";
 import { prisma } from "~/server/db";
 
 const getMonthRange = () => {
