@@ -181,13 +181,7 @@ async function main() {
         recipientName: faker.name.fullName(),
         address: faker.address.streetAddress(),
         type:
-          i % 3 == 0
-            ? i % 2 == 0
-              ? i % 5 == 0
-                ? "CASH_ON_DELIVERY"
-                : "CONTACTLESS"
-              : "IN_PERSON"
-            : "RETURN",
+          i % 3 == 0 ? (i % 2 == 0 ? "RETURN" : "CONTACTLESS") : "IN_PERSON",
         driver: i % 2 == 0 ? { connect: { id: driver.id } } : undefined,
         status:
           i % 2 == 0 ? (i % 4 == 0 ? "DELIVERED" : "ATTEMPTED") : "UNDELIVERED",
