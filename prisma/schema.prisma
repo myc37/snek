@@ -6,24 +6,27 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Driver {
-  id             String          @id @default(auto()) @map("_id") @db.ObjectId
-  licenseNumber  String
-  vehicleType    VehicleType
-  homeStation    String
-  parcels        Parcel[]
-  questInstances QuestInstance[]
-  infraction     Infraction[]
-  minimumGoal    Int
-  country        Country
+  id                    String                  @id @default(uuid())
+  licenseNumber         String
+  vehicleType           VehicleType
+  homeStation           String
+  parcels               Parcel[]
+  questInstances        QuestInstance[]
+  infraction            Infraction[]
+  vehicleConfig         VehicleConf             @relation(fields: [vehicleConfigId], references: [vehicleConfigId])
+  vehicleConfigId       String
+  IncentivePayStructure IncentivePayStructure[]
+  minimumGoal           Int
+  country               Country
 }
 
 model Parcel {
-  trackingNumber String        @id @default(auto()) @map("_id") @db.ObjectId
+  trackingNumber String        @id @default(dbgenerated("'T' || substr(uuid_generate_v4()::text, 2)"))
   assignedDate   DateTime
   deliveryDate   DateTime?
   size           Size
@@ -35,19 +38,19 @@ model Parcel {
   status         ParcelStatus
   failureReason  FailureReason
 
-  driverId String @db.ObjectId
+  driverId String
 }
 
 model Infraction {
-  infractionId String         @id @default(auto()) @map("_id") @db.ObjectId
+  infractionId String         @id @default(uuid())
   type         InfractionType
   date         DateTime
   driver       Driver         @relation(fields: [driverId], references: [id])
-  driverId     String         @db.ObjectId
+  driverId     String
 }
 
 model Quest {
-  questId                      String          @id @default(auto()) @map("_id") @db.ObjectId
+  questId                      String          @id @default(uuid())
   title                        String
   type                         QuestType
   targetPercentage             Int?
@@ -55,39 +58,78 @@ model Quest {
   bonusAmount                  Float
   questInstances               QuestInstance[]
   countryConfig                CountryConf     @relation(fields: [countryConfigCountryConfigId], references: [countryConfigId])
-  countryConfigCountryConfigId String          @db.ObjectId
+  countryConfigCountryConfigId String
   frequency                    QuestFreq
 }
 
 model QuestInstance {
-  questInstanceId String   @id @default(auto()) @map("_id") @db.ObjectId
+  questInstanceId String   @id @default(uuid())
   date            DateTime
   driver          Driver   @relation(fields: [driverId], references: [id])
   quest           Quest    @relation(fields: [questId], references: [questId])
-  driverId        String   @db.ObjectId
-  questId         String   @db.ObjectId
+  driverId        String
+  questId         String
   currentValue    Int?
   isCompleted     Boolean  @default(false)
 }
 
 model VehicleConf {
-  vehicleConfigId       String @id @default(auto()) @map("_id") @db.ObjectId
-  baseSalary            Int
-  incentivePayStructure Json
-  sizeBonus             Json
-  cashOnDeliveryBonus   Int
-  accessibilityBonus    Int
-  priorityBonus         Int
-  timeSlotBonus         Int
-  random                String
+  vehicleConfigId           String                      @id @default(uuid())
+  baseSalary                Int
+  incentivePayStructure     Json
+  sizeBonus                 Json
+  cashOnDeliveryBonus       Int
+  accessibilityBonus        Int
+  priorityBonus             Int
+  timeSlotBonus             Int
+  random                    String
+  drivers                   Driver[]
+  country                   Country
+  IncentivePayStructure     IncentivePayStructure[]
+  PackageTypeBonusStructure PackageTypeBonusStructure[]
+}
+
+model PackageTypeBonusStructure {
+  typeBonusId     String           @id @default(uuid())
+  vehicleConfig   VehicleConf      @relation(fields: [vehicleConfigId], references: [vehicleConfigId])
+  vehicleConfigId String
+  packageType     PackageBonusType
+  criteria        Int
+  bonus           Int
+
+  @@unique([vehicleConfigId, packageType])
+}
+
+enum PackageBonusType {
+  L_SIZE
+  CASH_ON_DELIVERY
+  RETURN_PACKAGE
+}
+
+model IncentivePayStructure {
+  incentivePayId  String      @id @default(uuid())
+  vehicleConfig   VehicleConf @relation(fields: [vehicleConfigId], references: [vehicleConfigId])
+  vehicleConfigId String
+  Driver          Driver?     @relation(fields: [driverId], references: [id])
+  driverId        String?
+  targetPackages  Int
+  bonusPayment    Float
 }
 
 model CountryConf {
-  country                Country @unique
-  countryConfigId        String  @id @default(auto()) @map("_id") @db.ObjectId
+  countryConfigId        String                   @id @default(uuid())
+  country                Country                  @unique
   quests                 Quest[]
-  isInfractionVisible    Boolean
-  infractionPayStructure Json
+  isInfractionVisible    Boolean                  @default(true)
+  InfractionPayStructure InfractionPayStructure[]
+}
+
+model InfractionPayStructure {
+  id              String         @id @default(uuid())
+  countryConf     CountryConf    @relation(fields: [countryConfigId], references: [countryConfigId])
+  countryConfigId String
+  infractionType  InfractionType
+  deduction       Float
 }
 
 enum Country {
@@ -136,6 +178,7 @@ enum DeliveryType {
   CONTACTLESS
   IN_PERSON
   RETURN
+  CASH_ON_DELIVERY
 }
 
 enum VehicleType {

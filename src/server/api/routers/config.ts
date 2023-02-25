@@ -9,4 +9,21 @@ export const configsRouter = createTRPCRouter({
     .query(async ({ input: { country } }) => {
       return await prisma.countryConf.findUnique({ where: { country } });
     }),
+  putConfigByCountry: publicProcedure
+    .input(
+      z.object({
+        country: z.nativeEnum(Country),
+        countryConfig: z.object({
+          isInfractionVisible: z.boolean(),
+          infractionPayStructure: z.any(),
+        }),
+      })
+    )
+    .mutation(async ({ input: { country, countryConfig } }) => {
+      return await prisma.countryConf.upsert({
+        where: { country },
+        update: countryConfig,
+        create: { ...countryConfig, country },
+      });
+    }),
 });
