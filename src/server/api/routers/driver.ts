@@ -48,6 +48,11 @@ export const driversRouter = createTRPCRouter({
   getInfractionsByDriverId: publicProcedure
     .input(z.object({ driverId: z.string() }))
     .query(async ({ input: { driverId } }) => {
+      const driver = await prisma.driver.findUnique({
+        where: { id: driverId },
+      });
+      if (!driver) throw new Error("Driver does not exist");
+
       const infractions = await prisma.infraction.findMany({
         where: {
           driverId,
@@ -57,27 +62,31 @@ export const driversRouter = createTRPCRouter({
         },
       });
 
-      const infractionTypes = infractions.map((infraction) => infraction.type);
+      const { country } = driver;
 
       const infractionStructures = await prisma.infractionPayStructure.findMany(
         {
-          where: { infractionType: { in: infractionTypes } },
+          where: {
+            countryConf: { country: country },
+          },
         }
       );
 
-      const infractionStructureMap: Record<InfractionType, number> =
-        infractionStructures.reduce((obj, { infractionType, deduction }) => {
-          return {
-            ...obj,
-            [infractionType]: deduction,
-          };
-        }, {} as Record<InfractionType, number>);
-
-      const totalDeduction = infractions.reduce((prev, curr) => {
-        return prev + infractionStructureMap[curr.type];
-      }, 0);
-
-      return totalDeduction;
+      const infractionTotals = infractionStructures.map(
+        ({ infractionType, deduction }) => {
+          const infractionsOfType = infractions.filter(
+            (infraction) => infractionType == infraction.type
+          );
+          const deductedForInfraction = infractionsOfType.length * deduction;
+          return [
+            infractionsOfType.length,
+            infractionType,
+            deduction,
+            deductedForInfraction,
+          ];
+        }
+      );
+      return infractionTotals;
     }),
   getTypeBonusByDriverId: publicProcedure
     .input(z.object({ driverId: z.string() }))
@@ -96,7 +105,7 @@ export const driversRouter = createTRPCRouter({
       });
 
       const bonuses = await Promise.all(
-        typeBonuses.map(async ({ criteria, bonus, packageType }) => {
+        typeBonuses.map(async ({ bonus, packageType }) => {
           if (packageType == "CASH_ON_DELIVERY") {
             const codPackages = await prisma.parcel.findMany({
               where: {
@@ -112,7 +121,8 @@ export const driversRouter = createTRPCRouter({
                 },
               },
             });
-            return (codPackages.length / criteria) * bonus;
+            const total = codPackages.length * bonus;
+            return [codPackages.length, packageType, bonus, total];
           } else if (packageType == "L_SIZE") {
             const lPackages = await prisma.parcel.findMany({
               where: {
@@ -128,7 +138,8 @@ export const driversRouter = createTRPCRouter({
                 status: "DELIVERED",
               },
             });
-            return (lPackages.length / criteria) * bonus;
+            const total = lPackages.length * bonus;
+            return [lPackages.length, packageType, bonus, total];
           } else {
             const returnPackages = await prisma.parcel.findMany({
               where: {
@@ -144,10 +155,11 @@ export const driversRouter = createTRPCRouter({
                 status: "DELIVERED",
               },
             });
-            return (returnPackages.length / criteria) * bonus;
+            const total = returnPackages.length * bonus;
+            return [returnPackages.length, packageType, bonus, total];
           }
         })
       );
-      return bonuses.reduce((prevSum, bonus) => prevSum + bonus);
+      return bonuses;
     }),
 });

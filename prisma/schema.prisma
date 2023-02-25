@@ -37,8 +37,7 @@ model Parcel {
   driver         Driver        @relation(fields: [driverId], references: [id])
   status         ParcelStatus
   failureReason  FailureReason
-
-  driverId String
+  driverId       String
 }
 
 model Infraction {
@@ -50,16 +49,16 @@ model Infraction {
 }
 
 model Quest {
-  questId                      String          @id @default(uuid())
-  title                        String
-  type                         QuestType
-  targetPercentage             Int?
-  targetValue                  Int?
-  bonusAmount                  Float
-  questInstances               QuestInstance[]
-  countryConfig                CountryConf     @relation(fields: [countryConfigCountryConfigId], references: [countryConfigId])
-  countryConfigCountryConfigId String
-  frequency                    QuestFreq
+  questId          String          @id @default(uuid())
+  title            String
+  type             QuestType
+  targetPercentage Int?
+  targetValue      Int?
+  bonusAmount      Float
+  questInstances   QuestInstance[]
+  countryConfig    CountryConf     @relation(fields: [countryConfigId], references: [countryConfigId])
+  countryConfigId  String
+  frequency        QuestFreq
 }
 
 model QuestInstance {
@@ -74,19 +73,17 @@ model QuestInstance {
 }
 
 model VehicleConf {
-  vehicleConfigId           String                      @id @default(uuid())
-  baseSalary                Int
-  incentivePayStructure     Json
-  sizeBonus                 Json
-  cashOnDeliveryBonus       Int
-  accessibilityBonus        Int
-  priorityBonus             Int
-  timeSlotBonus             Int
-  random                    String
-  drivers                   Driver[]
-  country                   Country
-  IncentivePayStructure     IncentivePayStructure[]
-  PackageTypeBonusStructure PackageTypeBonusStructure[]
+  vehicleConfigId            String                      @id @default(uuid())
+  baseSalary                 Int
+  sizeBonus                  Float
+  cashOnDeliveryBonus        Float
+  accessibilityBonus         Float
+  priorityBonus              Float
+  timeSlotBonus              Float
+  drivers                    Driver[]
+  country                    Country
+  incentivePayStructures     IncentivePayStructure[]
+  packageTypeBonusStructures PackageTypeBonusStructure[]
 }
 
 model PackageTypeBonusStructure {
@@ -117,19 +114,20 @@ model IncentivePayStructure {
 }
 
 model CountryConf {
+  country                Country
   countryConfigId        String                   @id @default(uuid())
-  country                Country                  @unique
   quests                 Quest[]
   isInfractionVisible    Boolean                  @default(true)
   InfractionPayStructure InfractionPayStructure[]
 }
 
 model InfractionPayStructure {
-  id              String         @id @default(uuid())
-  countryConf     CountryConf    @relation(fields: [countryConfigId], references: [countryConfigId])
-  countryConfigId String
-  infractionType  InfractionType
-  deduction       Float
+  id                         String         @id @default(uuid())
+  countryConf                CountryConf    @relation(fields: [countryConfCountryConfigId], references: [countryConfigId])
+  countryConfigId            String
+  infractionType             InfractionType
+  deduction                  Float
+  countryConfCountryConfigId String
 }
 
 enum Country {
