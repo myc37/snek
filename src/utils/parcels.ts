@@ -98,14 +98,13 @@ export function generateParcels(n: number): Parcel[] {
 export const generateFilterParcel = (search: string, filter: Filter) => {
   return (parcel: Parcel) => {
     let searchBool;
-
     if (search === "") {
       searchBool = true;
     } else {
       searchBool =
-        parcel.trackingNumber.includes(search) ||
-        parcel.address.includes(search) ||
-        parcel.recipientName.includes(search);
+        parcel.trackingNumber.toLowerCase().includes(search.toLowerCase()) ||
+        parcel.address.toLowerCase().includes(search.toLowerCase()) ||
+        parcel.recipientName.toLowerCase().includes(search.toLowerCase());
     }
 
     let filterBool = true;
