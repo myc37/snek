@@ -1,23 +1,22 @@
 import { z } from "zod";
-
+import { prisma } from "~/server/db";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import {
-  getAllQuestInstancesForDriver,
-  getCompletedQuestInstancesForDriver,
-  getQuestBonusForDriver,
-} from "../helpers/quests.helpers";
 
 export const questsRouter = createTRPCRouter({
-  getAllQuestsByDriverId: publicProcedure
+  getRewardTracksByDriverId: publicProcedure
     .input(z.object({ driverId: z.string() }))
     .query(async ({ input: { driverId } }) => {
-      return await getAllQuestInstancesForDriver(driverId);
-    }),
-  getQuestTotalAndArrayByDriverId: publicProcedure
-    .input(z.object({ driverId: z.string() }))
-    .query(async ({ input: { driverId } }) => {
-      const questTotal = await getQuestBonusForDriver(driverId);
-      const questArray = await getCompletedQuestInstancesForDriver(driverId);
-      return { questTotal, questArray };
+      const quests = await prisma.quest.findMany({});
+      const questsAndProgressions = await Promise.all(
+        quests.map(async (quest) => {
+          const questProgression = await prisma.questProgression.findUnique({
+            where: {
+              questId_driverId: { questId: quest.id, driverId: driverId },
+            },
+          });
+          return { rewardTrack: quest, progression: questProgression };
+        })
+      );
+      return questsAndProgressions;
     }),
 });
