@@ -22,17 +22,17 @@ model Driver {
   IncentivePayStructure IncentivePayStructure[]
   minimumGoal           Int
   country               Country
-  QuestProgression      QuestProgression[]
+  questProgressions     QuestProgression[]
 }
 
 model Quest {
   id               Int                @id @default(autoincrement())
   bronzeThreshold  Int
-  bronzeReward     Decimal
+  bronzeReward     Float
   silverThreshold  Int
-  silverReward     Decimal
+  silverReward     Float
   goldThreshold    Int
-  goldReward       Decimal
+  goldReward       Float
   title            String
   description      String
   QuestProgression QuestProgression[]
