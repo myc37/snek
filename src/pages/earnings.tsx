@@ -58,15 +58,6 @@ const History: NextPage = () => {
     bonusesArray: [],
   };
 
-  const { data: questData } =
-    api.quests.getQuestTotalAndArrayByDriverId.useQuery({
-      driverId: DUMMY_DRIVER_ID,
-    });
-  const { questTotal, questArray } = questData ?? {
-    questTotal: 0,
-    questArray: [],
-  };
-
   const { data: infractionData, isLoading: isLoadingInfractions } =
     api.drivers.getInfractionsByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,

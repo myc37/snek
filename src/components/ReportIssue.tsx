@@ -11,15 +11,9 @@ type Props = {
   isOpen: boolean;
   handleCloseReportIssue: () => void;
   parcel: Parcel;
-  refetch: () => void;
 };
 
-const ReportIssue: FC<Props> = ({
-  isOpen,
-  handleCloseReportIssue,
-  parcel,
-  refetch,
-}) => {
+const ReportIssue: FC<Props> = ({ isOpen, handleCloseReportIssue, parcel }) => {
   const updateStatus = api.parcels.updateStatusByTrackingNumber.useMutation();
   const [messageApi, contextHolder] = message.useMessage();
   const [issueReason, setIssueReason] = useState<FailureReason>("NOT_HOME");
@@ -36,7 +30,6 @@ const ReportIssue: FC<Props> = ({
         onSuccess: () => {
           void messageApi.success("Successfully reported an issue");
           setIsLoading(false);
-          refetch();
           handleCloseReportIssue();
         },
       }

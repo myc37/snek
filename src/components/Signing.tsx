@@ -9,15 +9,9 @@ type Props = {
   isOpen: boolean;
   handleCloseSigning: () => void;
   parcel: Parcel;
-  refetch: () => void;
 };
 
-const Signing: FC<Props> = ({
-  isOpen,
-  handleCloseSigning,
-  parcel,
-  refetch,
-}) => {
+const Signing: FC<Props> = ({ isOpen, handleCloseSigning, parcel }) => {
   const updateStatus = api.parcels.updateStatusByTrackingNumber.useMutation();
   const [signaturePad, setSignaturePad] = useState<SignaturePad | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
@@ -45,7 +39,6 @@ const Signing: FC<Props> = ({
         onSuccess: () => {
           handleCloseSigning();
           void messageApi.success("Successfully reported an issue");
-          refetch();
           setIsLoading(false);
         },
       }

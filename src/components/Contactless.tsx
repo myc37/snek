@@ -10,15 +10,9 @@ type Props = {
   isOpen: boolean;
   handleCloseContactless: () => void;
   parcel: Parcel;
-  refetch: () => void;
 };
 
-const Contactless: FC<Props> = ({
-  isOpen,
-  handleCloseContactless,
-  parcel,
-  refetch,
-}) => {
+const Contactless: FC<Props> = ({ isOpen, handleCloseContactless, parcel }) => {
   const updateStatus = api.parcels.updateStatusByTrackingNumber.useMutation();
   const ref = useRef<Webcam | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
@@ -34,7 +28,6 @@ const Contactless: FC<Props> = ({
       },
       {
         onSuccess: () => {
-          refetch();
           void messageApi.success("Successfully delivered");
           handleCloseContactless();
           setIsLoading(false);

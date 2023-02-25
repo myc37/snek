@@ -6,9 +6,9 @@ import Contactless from "./Contactless";
 import ReportIssue from "./ReportIssue";
 import { type DeliveryType, type Parcel, type Size } from "@prisma/client";
 
-type Props = { parcel: Parcel; refetch: () => void };
+type Props = { parcel: Parcel };
 
-const ParcelComponent: FC<Props> = ({ parcel, refetch }) => {
+const ParcelComponent: FC<Props> = ({ parcel }) => {
   const [isContactlessOpen, setIsContactlessOpen] = useState(false);
   const [isSigningOpen, setIsSigningOpen] = useState(false);
   const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
@@ -72,19 +72,16 @@ const ParcelComponent: FC<Props> = ({ parcel, refetch }) => {
         isOpen={isContactlessOpen}
         handleCloseContactless={handleCloseContactless}
         parcel={parcel}
-        refetch={refetch}
       />
       <Signing
         isOpen={isSigningOpen}
         handleCloseSigning={handleCloseSigning}
         parcel={parcel}
-        refetch={refetch}
       />
       <ReportIssue
         isOpen={isReportIssueOpen}
         handleCloseReportIssue={handleCloseReportIssue}
         parcel={parcel}
-        refetch={refetch}
       />
       <Disclosure>
         {({ open }) => (

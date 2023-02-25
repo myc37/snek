@@ -19,13 +19,10 @@ const Orders: NextPage = () => {
   const [isScanningQr, setIsScanningQr] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filter, setFilter] = useState<Filter>(initUncheckedFilter());
-  const {
-    data: parcels,
-    isInitialLoading: isLoading,
-    refetch,
-  } = api.parcels.getNonCompletedByDriverId.useQuery({
-    driverId: DUMMY_DRIVER_ID,
-  });
+  const { data: parcels, isInitialLoading: isLoading } =
+    api.parcels.getNonCompletedByDriverId.useQuery({
+      driverId: DUMMY_DRIVER_ID,
+    });
 
   const handleChangeSearch = (event: ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
@@ -110,11 +107,7 @@ const Orders: NextPage = () => {
         } parcel${filteredParcels.length !== 1 ? "s" : ""} found`}</div>
         <div className="flex flex-col gap-3">
           {filteredParcels.map((parcel) => (
-            <ParcelComponent
-              key={parcel.trackingNumber}
-              parcel={parcel}
-              refetch={refetch}
-            />
+            <ParcelComponent key={parcel.trackingNumber} parcel={parcel} />
           ))}
           {parcels.length === 0 ? (
             <div className="my-10 flex flex-col items-center justify-center">

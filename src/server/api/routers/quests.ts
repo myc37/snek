@@ -14,8 +14,9 @@ export const questsRouter = createTRPCRouter({
         quests.map(async (quest) => {
           let questProgression = await prisma.questProgression.findUnique({
             where: {
-              questId_driverId: { questId: quest.id, driverId: driverId },
-              month_year: {
+              questId_driverId_month_year: {
+                questId: quest.id,
+                driverId: driverId,
                 month: new Date().getMonth(),
                 year: new Date().getFullYear(),
               },

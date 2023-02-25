@@ -47,7 +47,7 @@ model QuestProgression {
   month              Int
   year               Int
 
-  @@id([questId, driverId])
+  @@id([questId, driverId, month, year])
   @@unique([month, year])
 }
 
