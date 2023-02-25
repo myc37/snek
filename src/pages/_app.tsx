@@ -1,9 +1,13 @@
 import { type AppType } from "next/app";
+// Components
+import MyHead from "~/components/MyHead";
 
+// Utils
 import { api } from "~/utils/api";
 
+// Styles
 import "~/styles/globals.css";
-import MyHead from "~/components/MyHead";
+import "@fontsource/inter";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
