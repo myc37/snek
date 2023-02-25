@@ -1,22 +1,28 @@
 import type { FC } from "react";
 import type { FeQuest } from "~/types/quests";
 import { Disclosure } from "@headlessui/react";
-import { api } from "~/utils/api";
 
 type Props = {
   quest: FeQuest;
+  minimumGoal: number;
 };
 
-const Quest: FC<Props> = ({ quest }) => {
-  const {
-    data: minimumGoal,
-    isLoading,
-    isFetching,
-  } = api.drivers.getMinimumGoalByDriverId.useQuery({
-    driverId: "1",
-  });
+const Quest: FC<Props> = ({ quest, minimumGoal }) => {
+  const getProgressionColor = () => {
+    const progression = Math.round(
+      quest.frequency === "DAILY"
+        ? quest.currentValue ?? 0 / minimumGoal
+        : (quest?.currentValue ?? 0) / (quest?.targetValue ?? 0)
+    );
 
-  if (isFetching || isLoading) return <>Loading...</>;
+    if (progression < 0.25) {
+      return "text-red-500";
+    } else if (progression < 0.5) {
+      return "text-yellow-500";
+    } else {
+      return "text-green-500";
+    }
+  };
 
   return (
     <Disclosure>
@@ -32,7 +38,7 @@ const Quest: FC<Props> = ({ quest }) => {
             <div className="flex w-full flex-col items-start">
               <div className="text-xs">
                 {new Date().toLocaleDateString("en-sg", {
-                  month: "short",
+                  month: "long",
                   day: "2-digit",
                 })}
               </div>
@@ -40,12 +46,15 @@ const Quest: FC<Props> = ({ quest }) => {
               <div className="mt-1 font-bold">{quest.title}</div>
 
               <div className="mt-4 flex w-full flex-row items-end justify-between">
-                <div className="font-bold">{`+${quest.bonusAmount}`}</div>
-                <div className="text-lg">
+                <div className="font-bold text-green-500">{`+$${quest.bonusAmount.toFixed(
+                  2
+                )}`}</div>
+                <div
+                  className={`text-lg font-semibold ${getProgressionColor()}`}
+                >
                   {quest.frequency === "DAILY" ? (
                     <div>
-                      {Math.round(quest.currentValue ?? 0 / (minimumGoal ?? 0))}
-                      %
+                      {Math.round(quest.currentValue ?? 0 / minimumGoal) * 100}%
                     </div>
                   ) : (
                     <div>
