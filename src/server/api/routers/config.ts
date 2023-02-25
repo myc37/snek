@@ -6,5 +6,7 @@ import { Country } from "@prisma/client";
 export const configsRouter = createTRPCRouter({
   getConfigByCountry: publicProcedure
     .input(z.object({ country: z.nativeEnum(Country) }))
-    .query(async ({ input: { country } }) => {}),
+    .query(async ({ input: { country } }) => {
+      return await prisma.countryConf.findUnique({ where: { country } });
+    }),
 });
