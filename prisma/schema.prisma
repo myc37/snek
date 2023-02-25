@@ -79,10 +79,20 @@ model VehicleConfig {
 }
 
 model CountryConfig {
+  country                Country @unique
   countryConfigId        String  @id @default(auto()) @map("_id") @db.ObjectId
   quests                 Quest[]
   isInfractionVisible    Boolean
   infractionPayStructure Json
+}
+
+enum Country {
+  SG
+  MY
+  TH
+  IN
+  VN
+  PH
 }
 
 enum QuestFreq {
