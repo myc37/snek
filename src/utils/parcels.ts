@@ -1,4 +1,5 @@
 import { type Driver } from "~/types/drivers";
+import { Filter } from "~/types/filter";
 import { type InfractionType } from "~/types/infractions";
 import {
   type Parcel,
@@ -10,6 +11,7 @@ import {
 } from "~/types/parcels";
 import { type QuestType, type QuestFreq } from "~/types/quests";
 import { type VehicleType } from "~/types/vehicles";
+import { isAllUnchecked } from "./filter";
 
 // Helper function to generate a random integer within a range
 function getRandomIntInRange(min: number, max: number): number {
@@ -92,3 +94,43 @@ export function generateParcels(n: number): Parcel[] {
   }
   return parcels;
 }
+
+export const generateFilterParcel = (search: string, filter: Filter) => {
+  return (parcel: Parcel) => {
+    let searchBool;
+
+    if (search === "") {
+      searchBool = true;
+    } else {
+      searchBool =
+        parcel.trackingNumber.includes(search) ||
+        parcel.address.includes(search) ||
+        parcel.recipientName.includes(search);
+    }
+
+    let filterBool = true;
+    if (!isAllUnchecked(filter.Type)) {
+      filterBool =
+        filterBool &&
+        ((filter.Type.Contactless && parcel.type === "CONTACTLESS") ||
+          (filter.Type["In-person"] && parcel.type === "IN_PERSON") ||
+          (filter.Type.Return && parcel.type === "RETURN"));
+    }
+    if (!isAllUnchecked(filter.Size)) {
+      filterBool =
+        filterBool &&
+        ((filter.Size.XS && parcel.size === "XS") ||
+          (filter.Size.S && parcel.size === "S") ||
+          (filter.Size.M && parcel.size === "M") ||
+          (filter.Size.L && parcel.size === "L"));
+    }
+    if (!isAllUnchecked(filter.Cash)) {
+      filterBool =
+        filterBool &&
+        ((filter.Cash.Cash && parcel.isCash) ||
+          (filter.Cash.Cashless && !parcel.isCash));
+    }
+
+    return searchBool && filterBool;
+  };
+};

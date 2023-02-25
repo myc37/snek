@@ -22,6 +22,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.7.1",
+    "react-qr-reader": "^3.0.0-beta-1",
     "superjson": "1.9.1",
     "zod": "^3.20.2"
   },
@@ -42,6 +43,12 @@
     "prisma": "^4.9.0",
     "tailwindcss": "^3.2.0",
     "typescript": "^4.9.4"
+  },
+  "overrides": {
+    "react-qr-reader": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    }
   },
   "ct3aMetadata": {
     "initVersion": "7.5.6"
