@@ -23,6 +23,7 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.7.1",
     "react-qr-reader": "^3.0.0-beta-1",
+    "react-webcam": "^7.0.1",
     "signature_pad": "^4.1.5",
     "superjson": "1.9.1",
     "zod": "^3.20.2"
