@@ -24,7 +24,7 @@ model Driver {
 }
 
 model Parcel {
-  trackingNumber String        @id @default(uuid()) @map("_id")
+  trackingNumber String        @id @default(dbgenerated("'T' || substr(uuid_generate_v4()::text, 2)"))
   assignedDate   DateTime
   deliveryDate   DateTime?
   size           Size
@@ -68,29 +68,51 @@ model QuestInstance {
 
   driverId String
   questId  String
+
+  @@unique([driverId, questId])
 }
 
 model VehicleConf {
-  vehicleConfigId       String                  @id @default(uuid())
-  baseSalary            Int
-  incentivePayStructure Json
-  sizeBonus             Json
-  cashOnDeliveryBonus   Int
-  accessibilityBonus    Int
-  priorityBonus         Int
-  timeSlotBonus         Int
-  random                String
-  drivers               Driver[]
-  country               Country
-  IncentivePayStructure IncentivePayStructure[]
+  vehicleConfigId           String                      @id @default(uuid())
+  baseSalary                Int
+  incentivePayStructure     Json
+  sizeBonus                 Json
+  cashOnDeliveryBonus       Int
+  accessibilityBonus        Int
+  priorityBonus             Int
+  timeSlotBonus             Int
+  random                    String
+  drivers                   Driver[]
+  country                   Country
+  IncentivePayStructure     IncentivePayStructure[]
+  PackageTypeBonusStructure PackageTypeBonusStructure[]
+}
+
+model PackageTypeBonusStructure {
+  typeBonusId     String           @id @default(uuid())
+  vehicleConfig   VehicleConf      @relation(fields: [vehicleConfigId], references: [vehicleConfigId])
+  vehicleConfigId String
+  packageType     PackageBonusType
+  criteria        Int
+  bonus           Int
+
+  @@unique([vehicleConfigId, packageType])
+}
+
+enum PackageBonusType {
+  L_SIZE
+  CASH_ON_DELIVERY
+  RETURN_PACKAGE
 }
 
 model IncentivePayStructure {
-  incentivePayId             String      @id @default(uuid())
-  vehicleConfig              VehicleConf @relation(fields: [vehicleConfVehicleConfigId], references: [vehicleConfigId])
-  vehicleConfVehicleConfigId String
-  Driver                     Driver?     @relation(fields: [driverId], references: [id])
-  driverId                   String?
+  incentivePayId  String      @id @default(uuid())
+  vehicleConfig   VehicleConf @relation(fields: [vehicleConfigId], references: [vehicleConfigId])
+  vehicleConfigId String
+  Driver          Driver?     @relation(fields: [driverId], references: [id])
+  driverId        String?
+  targetPackages  Int
+  bonusPayment    Float
 }
 
 model CountryConf {
@@ -102,11 +124,11 @@ model CountryConf {
 }
 
 model InfractionPayStructure {
-  id              String      @id @default(uuid())
-  countryConf     CountryConf @relation(fields: [countryConfigId], references: [countryConfigId])
+  id              String         @id @default(uuid())
+  countryConf     CountryConf    @relation(fields: [countryConfigId], references: [countryConfigId])
   countryConfigId String
-  target          Int
-  bonus           Float
+  infractionType  InfractionType
+  deduction       Float
 }
 
 enum Country {
@@ -155,6 +177,7 @@ enum DeliveryType {
   CONTACTLESS
   IN_PERSON
   RETURN
+  CASH_ON_DELIVERY
 }
 
 enum VehicleType {
