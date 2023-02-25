@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 // @ts-check
 
 /**
@@ -5,6 +6,7 @@
  * This is especially useful for Docker builds.
  */
 !process.env.SKIP_ENV_VALIDATION && (await import("./src/env.mjs"));
+import nextPwa from "next-pwa";
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -21,4 +23,4 @@ const config = {
     defaultLocale: "en",
   },
 };
-export default config;
+export default nextPwa({ dest: "public" })(config);
