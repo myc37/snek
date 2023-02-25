@@ -9,7 +9,7 @@ export const configsRouter = createTRPCRouter({
     .query(async ({ input: { country } }) => {
       const countryConfig = await prisma.countryConf.findUnique({
         where: { country },
-        include: { infractionPayStructures: true },
+        include: { infractionPayStructures: true, quests: true },
       });
 
       const vehicleConfigs = await prisma.vehicleConf.findMany({
