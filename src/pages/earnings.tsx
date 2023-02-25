@@ -1,13 +1,15 @@
-import { Disclosure, Transition } from "@headlessui/react";
 import type { NextPage } from "next";
-import { BiChevronDown, BiStar } from "react-icons/bi";
 import AppBar from "~/components/AppBar";
 import Container from "~/components/Container";
+import Error from "~/components/Error";
 import Infractions from "~/components/Infractions";
+import Loading from "~/components/Loading";
 import ProgressBar from "~/components/ProgressBar";
 import QuestBonus from "~/components/QuestBonus";
 import TypeBonus from "~/components/TypeBonus";
 import { type Month, months } from "~/types/dates";
+import { api } from "~/utils/api";
+import { DUMMY_DRIVER_ID } from "~/utils/constants";
 import { addCurrency, formatNumbersWithCommas } from "~/utils/numbers";
 
 const History: NextPage = () => {
@@ -16,16 +18,38 @@ const History: NextPage = () => {
 
   const barProgress = Math.round(Math.random() * 100 + 1);
   const basePay = 2500;
-  const quantityBonus = 200;
+  const { data: quantityBonus, isLoading: isLoadingQuantityBonus } =
+    api.driver.getQtyBonusByDriverId.useQuery({
+      driverId: DUMMY_DRIVER_ID,
+    });
 
-  const typeBonus = 250;
   const bonusRecords = [[25, "L parcel", 2.5, 50]];
+  const { data: typeBonus, isLoading: isLoadingTypeBonus } =
+    api.driver.getTypeBonusByDriverId.useQuery({
+      driverId: DUMMY_DRIVER_ID,
+    });
 
   const questBonus = 200;
   const questRecords: string[] = [];
 
-  const infractionAmount = 100;
   const infractionRecords: string[] = [];
+  const { data: infractionAmount, isLoading: isLoadingInfractions } =
+    api.driver.getInfractionsByDriverId.useQuery({
+      driverId: DUMMY_DRIVER_ID,
+    });
+
+  const isLoading =
+    isLoadingQuantityBonus || isLoadingTypeBonus || isLoadingInfractions;
+
+  if (isLoading) {
+    return <Loading />;
+  } else if (
+    quantityBonus === undefined ||
+    typeBonus === undefined ||
+    infractionAmount === undefined
+  ) {
+    return <Error />;
+  }
 
   return (
     <>

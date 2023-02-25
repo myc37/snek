@@ -71,11 +71,17 @@ const ParcelComponent: FC<Props> = ({ parcel }) => {
       <Contactless
         isOpen={isContactlessOpen}
         handleCloseContactless={handleCloseContactless}
+        parcel={parcel}
       />
-      <Signing isOpen={isSigningOpen} handleCloseSigning={handleCloseSigning} />
+      <Signing
+        isOpen={isSigningOpen}
+        handleCloseSigning={handleCloseSigning}
+        parcel={parcel}
+      />
       <ReportIssue
         isOpen={isReportIssueOpen}
         handleCloseReportIssue={handleCloseReportIssue}
+        parcel={parcel}
       />
       <Disclosure>
         {({ open }) => (
