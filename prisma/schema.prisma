@@ -16,13 +16,33 @@ model Driver {
   vehicleType           VehicleType
   homeStation           String
   parcels               Parcel[]
-  questInstances        QuestInstance[]
   infraction            Infraction[]
   vehicleConfig         VehicleConf             @relation(fields: [vehicleConfigId], references: [vehicleConfigId])
   vehicleConfigId       String
   IncentivePayStructure IncentivePayStructure[]
   minimumGoal           Int
   country               Country
+  QuestProgression      QuestProgression[]
+}
+
+model Quest {
+  id               Int                @id @default(autoincrement())
+  bronzeThreshold  Int
+  silverThreshold  Int
+  goldThreshold    Int
+  title            String
+  description      String
+  QuestProgression QuestProgression[]
+}
+
+model QuestProgression {
+  quest              Quest  @relation(fields: [questId], references: [id])
+  questId            Int
+  driver             Driver @relation(fields: [driverId], references: [id])
+  driverId           String
+  currentProgression Int
+
+  @@id([questId, driverId])
 }
 
 model Parcel {
@@ -46,30 +66,6 @@ model Infraction {
   date         DateTime
   driver       Driver         @relation(fields: [driverId], references: [id])
   driverId     String
-}
-
-model Quest {
-  questId          String          @id @default(uuid())
-  title            String
-  type             QuestType
-  targetPercentage Int?
-  targetValue      Int?
-  bonusAmount      Float
-  questInstances   QuestInstance[]
-  countryConfig    CountryConf     @relation(fields: [countryConfigId], references: [countryConfigId])
-  countryConfigId  String
-  frequency        QuestFreq
-}
-
-model QuestInstance {
-  questInstanceId String   @id @default(uuid())
-  date            DateTime
-  driver          Driver   @relation(fields: [driverId], references: [id])
-  quest           Quest    @relation(fields: [questId], references: [questId])
-  driverId        String
-  questId         String
-  currentValue    Int?
-  isCompleted     Boolean  @default(false)
 }
 
 model VehicleConf {
@@ -115,7 +111,6 @@ model IncentivePayStructure {
 model CountryConf {
   country                 Country                  @unique
   countryConfigId         String                   @id @default(uuid())
-  quests                  Quest[]
   isInfractionVisible     Boolean                  @default(true)
   infractionPayStructures InfractionPayStructure[]
   VehicleConf             VehicleConf[]

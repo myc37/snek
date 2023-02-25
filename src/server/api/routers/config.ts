@@ -14,7 +14,7 @@ export const configsRouter = createTRPCRouter({
     .query(async ({ input: { country } }) => {
       const countryConfig = await prisma.countryConf.findUnique({
         where: { country },
-        include: { infractionPayStructures: true, quests: true },
+        include: { infractionPayStructures: true },
       });
 
       if (!countryConfig) throw new Error("Country Config Does Not Exist");
