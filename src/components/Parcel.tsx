@@ -102,7 +102,8 @@ const ParcelComponent: FC<Props> = ({ parcel }) => {
                       parcel.type
                     )} px-2 py-1 text-sm`}
                   >
-                    {parcel.type}
+                    {parcel.type.slice(0, 1) +
+                      parcel.type.toLowerCase().replace("_", "-").slice(1)}
                   </div>
 
                   {parcel.isCash ? (

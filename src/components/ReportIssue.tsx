@@ -15,13 +15,22 @@ type Props = {
 const ReportIssue: FC<Props> = ({ isOpen, handleCloseReportIssue, parcel }) => {
   const updateStatus = api.parcels.updateStatusByTrackingNumber.useMutation();
   const [issueReason, setIssueReason] = useState<FailureReason>("NOT_HOME");
+  const [isLoading, setIsLoading] = useState(false);
 
   const reportIssue = () => {
-    updateStatus.mutate({
-      trackingNumber: parcel.trackingNumber,
-      status: ParcelStatus.ATTEMPTED,
-    });
-    handleCloseReportIssue();
+    updateStatus.mutate(
+      {
+        trackingNumber: parcel.trackingNumber,
+        status: ParcelStatus.ATTEMPTED,
+      },
+      {
+        onSuccess: () => {
+          handleCloseReportIssue();
+          window.location.reload();
+          setIsLoading(false);
+        },
+      }
+    );
   };
 
   const closeAndReset = () => {
@@ -168,10 +177,11 @@ const ReportIssue: FC<Props> = ({ isOpen, handleCloseReportIssue, parcel }) => {
                     Cancel
                   </button>
                   <button
-                    className="flex w-full items-center whitespace-nowrap rounded-md border-2 border-primary bg-primary px-4 py-2 text-gray-1"
+                    className="flex w-full items-center justify-center whitespace-nowrap rounded-md border-2 border-primary bg-primary px-4 py-2 text-gray-1"
                     onClick={reportIssue}
+                    disabled={isLoading}
                   >
-                    Report Issue
+                    {isLoading ? "Loading..." : "Report issue"}
                   </button>
                 </div>
               </Dialog.Panel>
