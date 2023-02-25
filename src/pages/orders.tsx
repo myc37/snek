@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
-import Parcel from "~/components/Parcel";
-import { BiCamera, BiSortAlt2, BiFilter } from "react-icons/bi";
-import { generateFilterParcel, generateParcels } from "~/utils/parcels";
+import ParcelComponent from "~/components/Parcel";
+import { BiCamera, BiFilter } from "react-icons/bi";
+import { generateFilterParcel } from "~/utils/parcels";
 import { type ChangeEvent, useState } from "react";
 import AppBar from "~/components/AppBar";
 import FullScreenContainer from "~/components/FullScreenContainer";
@@ -10,13 +10,14 @@ import { type Filter } from "~/types/filter";
 import { initUncheckedFilter } from "~/utils/filter";
 import FilterModal from "~/components/FilterModal";
 import { api } from "~/utils/api";
+import { type Parcel } from "@prisma/client";
 
 const Orders: NextPage = () => {
   const [search, setSearch] = useState("");
   const [isScanningQr, setIsScanningQr] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filter, setFilter] = useState<Filter>(initUncheckedFilter());
-  const parcels = generateParcels(20);
+  const parcels: Parcel[] = [];
 
   const handleChangeSearch = (event: ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
@@ -95,7 +96,7 @@ const Orders: NextPage = () => {
         } parcel${filteredParcels.length !== 1 ? "s" : ""} found`}</div>
         <div className="flex flex-col gap-3">
           {filteredParcels.map((parcel) => (
-            <Parcel key={parcel.trackingNumber} parcel={parcel} />
+            <ParcelComponent key={parcel.trackingNumber} parcel={parcel} />
           ))}
         </div>
       </FullScreenContainer>

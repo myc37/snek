@@ -40,7 +40,7 @@ const Quest: FC<Props> = ({ quest }) => {
               <div className="mt-1 font-bold">{quest.title}</div>
 
               <div className="mt-4 flex w-full flex-row items-end justify-between">
-                <div className="font-bold">+${quest.bonusAmount}</div>
+                <div className="font-bold">{`+${quest.bonusAmount}`}</div>
                 <div className="text-lg">
                   {quest.frequency === "DAILY" ? (
                     <div>
