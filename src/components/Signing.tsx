@@ -1,5 +1,6 @@
 import { Transition, Dialog } from "@headlessui/react";
 import { type Parcel, ParcelStatus } from "@prisma/client";
+import { message } from "antd";
 import { Fragment, useEffect, useState, type FC } from "react";
 import SignaturePad from "signature_pad";
 import { api } from "~/utils/api";
@@ -8,11 +9,18 @@ type Props = {
   isOpen: boolean;
   handleCloseSigning: () => void;
   parcel: Parcel;
+  refetch: () => void;
 };
 
-const Signing: FC<Props> = ({ isOpen, handleCloseSigning, parcel }) => {
+const Signing: FC<Props> = ({
+  isOpen,
+  handleCloseSigning,
+  parcel,
+  refetch,
+}) => {
   const updateStatus = api.parcels.updateStatusByTrackingNumber.useMutation();
   const [signaturePad, setSignaturePad] = useState<SignaturePad | null>(null);
+  const [messageApi, contextHolder] = message.useMessage();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -36,8 +44,8 @@ const Signing: FC<Props> = ({ isOpen, handleCloseSigning, parcel }) => {
       {
         onSuccess: () => {
           handleCloseSigning();
-          window.location.reload();
-          window.location.reload();
+          void messageApi.success("Successfully reported an issue");
+          refetch();
           setIsLoading(false);
         },
       }
@@ -80,6 +88,7 @@ const Signing: FC<Props> = ({ isOpen, handleCloseSigning, parcel }) => {
                   as="h3"
                   className="text-lg font-bold leading-6 text-gray-900"
                 >
+                  {contextHolder}
                   Confirming in-person delivery
                 </Dialog.Title>
                 <canvas className="my-4 w-full rounded-md border-2 border-secondary bg-white" />
