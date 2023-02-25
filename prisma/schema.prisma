@@ -6,22 +6,25 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Driver {
-  id             String          @id @default(auto()) @map("_id") @db.ObjectId
-  licenseNumber  String
-  vehicleType    VehicleType
-  homeStation    String
-  parcels        Parcel[]
-  questInstances QuestInstance[]
-  infraction     Infraction[]
+  id                    String                  @id @default(uuid())
+  licenseNumber         String
+  vehicleType           VehicleType
+  homeStation           String
+  parcels               Parcel[]
+  questInstances        QuestInstance[]
+  infraction            Infraction[]
+  vehicleConfig         VehicleConf             @relation(fields: [vehicleConfigId], references: [vehicleConfigId])
+  vehicleConfigId       String
+  IncentivePayStructure IncentivePayStructure[]
 }
 
 model Parcel {
-  trackingNumber String        @id @default(auto()) @map("_id") @db.ObjectId
+  trackingNumber String        @id @default(uuid()) @map("_id")
   assignedDate   DateTime
   deliveryDate   DateTime?
   size           Size
@@ -33,42 +36,42 @@ model Parcel {
   status         ParcelStatus
   failureReason  FailureReason
 
-  driverId String @db.ObjectId
+  driverId String
 }
 
 model Infraction {
-  infractionId String         @id @default(auto()) @map("_id") @db.ObjectId
+  infractionId String         @id @default(uuid())
   type         InfractionType
   date         DateTime
   driver       Driver         @relation(fields: [driverId], references: [id])
-  driverId     String         @db.ObjectId
+  driverId     String
 }
 
 model Quest {
-  questId                      String          @id @default(auto()) @map("_id") @db.ObjectId
+  questId                      String          @id @default(uuid())
   type                         QuestType
   targetPercentage             Int?
   title                        String
   value                        Int?
   questInstance                QuestInstance[]
   countryConfig                CountryConf     @relation(fields: [countryConfigCountryConfigId], references: [countryConfigId])
-  countryConfigCountryConfigId String          @db.ObjectId
+  countryConfigCountryConfigId String
   frequency                    QuestFreq
 }
 
 model QuestInstance {
-  questInstanceId String   @id @default(auto()) @map("_id") @db.ObjectId
+  questInstanceId String   @id @default(uuid()) @map("_id")
   date            DateTime
   driver          Driver   @relation(fields: [driverId], references: [id])
   quest           Quest    @relation(fields: [questId], references: [questId])
   isComplete      Boolean
 
-  driverId String @db.ObjectId
-  questId  String @db.ObjectId
+  driverId String
+  questId  String
 }
 
 model VehicleConf {
-  vehicleConfigId       String @id @default(auto()) @map("_id") @db.ObjectId
+  vehicleConfigId       String                  @id @default(uuid())
   baseSalary            Int
   incentivePayStructure Json
   sizeBonus             Json
@@ -77,14 +80,33 @@ model VehicleConf {
   priorityBonus         Int
   timeSlotBonus         Int
   random                String
+  drivers               Driver[]
+  country               Country
+  IncentivePayStructure IncentivePayStructure[]
+}
+
+model IncentivePayStructure {
+  incentivePayId             String      @id @default(uuid())
+  vehicleConfig              VehicleConf @relation(fields: [vehicleConfVehicleConfigId], references: [vehicleConfigId])
+  vehicleConfVehicleConfigId String
+  Driver                     Driver?     @relation(fields: [driverId], references: [id])
+  driverId                   String?
 }
 
 model CountryConf {
-  countryConfigId        String  @id @default(auto()) @map("_id") @db.ObjectId
-  country                Country @unique
+  countryConfigId        String                   @id @default(uuid())
+  country                Country                  @unique
   quests                 Quest[]
-  isInfractionVisible    Boolean @default(true)
-  infractionPayStructure Json
+  isInfractionVisible    Boolean                  @default(true)
+  InfractionPayStructure InfractionPayStructure[]
+}
+
+model InfractionPayStructure {
+  id              String      @id @default(uuid())
+  countryConf     CountryConf @relation(fields: [countryConfigId], references: [countryConfigId])
+  countryConfigId String
+  target          Int
+  bonus           Float
 }
 
 enum Country {
