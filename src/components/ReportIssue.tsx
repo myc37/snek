@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Transition, Dialog, Listbox } from "@headlessui/react";
-import { Parcel, ParcelStatus, type FailureReason } from "@prisma/client";
+import { type Parcel, ParcelStatus, type FailureReason } from "@prisma/client";
 import { Fragment, useState, type FC } from "react";
 import { BiCheck, BiChevronDown } from "react-icons/bi";
 import { api } from "~/utils/api";
