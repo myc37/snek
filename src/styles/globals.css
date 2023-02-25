@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: "Inter";
+@layer base {
+  body {
+    font-family: Inter, "Trebuchet MS", -apple-system, Arial, BlinkMacSystemFont,
+      sans-serif;
+  }
 }
