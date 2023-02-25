@@ -8,6 +8,11 @@ import {
   type VehicleType,
 } from "@prisma/client";
 
+type getConfigByCountryReturnType = Record<
+  VehicleType,
+  VehicleConf & { incentivePayStructure: Record<number, number> }
+>;
+
 export const configsRouter = createTRPCRouter({
   getConfigByCountry: publicProcedure
     .input(z.object({ country: z.nativeEnum(Country) }))
@@ -19,15 +24,28 @@ export const configsRouter = createTRPCRouter({
 
       const vehicleConfigs = await prisma.vehicleConf.findMany({
         where: { country: country },
-        include: { incentivePayStructures: true },
+        include: {
+          incentivePayStructures: { orderBy: { targetPackages: "asc" } },
+        },
       });
 
       const vehicleTypeToConfigMap: Record<
         VehicleType,
-        VehicleConf & IncentivePayStructure[]
-      > = vehicleConfigs.reduce((prev, curr) => {
-        return { ...prev, [curr.vehicleType]: curr };
-      }, {} as Record<VehicleType, VehicleConf & IncentivePayStructure[]>);
+        VehicleConf & { incentivePayStructure: Record<number, number> }
+      > = vehicleConfigs.reduce((prev, { incentivePayStructures, ...curr }) => {
+        const incentivePayMap = incentivePayStructures.reduce((p, c) => {
+          const { targetPackages, bonusPayment } = c;
+          return { ...p, [targetPackages]: bonusPayment };
+        }, {});
+
+        return {
+          ...prev,
+          [curr.vehicleType]: {
+            incentivePayStructure: incentivePayMap,
+            ...curr,
+          },
+        };
+      }, {} as Record<VehicleType, VehicleConf & { incentivePayStructure: Record<number, number> }>);
 
       return { ...countryConfig, vehicleConfig: vehicleTypeToConfigMap };
     }),
