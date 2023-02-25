@@ -1,5 +1,6 @@
 import { Transition, Dialog } from "@headlessui/react";
 import { type Parcel, ParcelStatus } from "@prisma/client";
+import { message } from "antd";
 import { Fragment, useCallback, useRef, useState, type FC } from "react";
 import { BiCamera, BiXCircle } from "react-icons/bi";
 import Webcam from "react-webcam";
@@ -9,11 +10,18 @@ type Props = {
   isOpen: boolean;
   handleCloseContactless: () => void;
   parcel: Parcel;
+  refetch: () => void;
 };
 
-const Contactless: FC<Props> = ({ isOpen, handleCloseContactless, parcel }) => {
+const Contactless: FC<Props> = ({
+  isOpen,
+  handleCloseContactless,
+  parcel,
+  refetch,
+}) => {
   const updateStatus = api.parcels.updateStatusByTrackingNumber.useMutation();
   const ref = useRef<Webcam | null>(null);
+  const [messageApi, contextHolder] = message.useMessage();
   const [files, setFiles] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -26,8 +34,9 @@ const Contactless: FC<Props> = ({ isOpen, handleCloseContactless, parcel }) => {
       },
       {
         onSuccess: () => {
+          refetch();
+          void messageApi.success("Successfully delivered");
           handleCloseContactless();
-          window.location.reload();
           setIsLoading(false);
         },
       }
@@ -94,6 +103,7 @@ const Contactless: FC<Props> = ({ isOpen, handleCloseContactless, parcel }) => {
                   as="h3"
                   className="text-lg font-bold leading-6 text-gray-900"
                 >
+                  {contextHolder}
                   Confirming contactless delivery
                   <div className="mt-1 text-sm text-gray-600">
                     Please take photos of the parcel, unit number, and floormat
