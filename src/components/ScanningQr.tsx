@@ -15,22 +15,36 @@ const ScanningQr: FC<Props> = ({ isOpen, handleCloseScanQr, handleScan }) => {
     return <></>;
   }
 
+  const closeAndReset = () => {
+    setError("");
+    handleCloseScanQr();
+  };
+
   return (
     <div className="fixed top-0 left-0 z-50 flex h-screen w-screen flex-col items-center justify-center gap-4 bg-background px-6">
       <BiX
         className="absolute top-6 right-6 z-[60] cursor-pointer text-3xl text-primary"
-        onClick={handleCloseScanQr}
+        onClick={closeAndReset}
       />
       <div className="w-full">
+        <div className="text-center text-xl">
+          Scan a parcel&apos;s QR code to search for it
+        </div>
         <QrReader
           constraints={{ facingMode: "environment" }}
           onResult={(result) => {
             if (!result) {
               return;
             }
-            //TODO:
-            const isValidTrackingNumber = result.getText()[0] === "T";
-            if (isValidTrackingNumber) {
+            console.log(result.getText());
+            let isValid = false;
+            try {
+              new URL(result.getText());
+            } catch (error) {
+              isValid = true;
+            }
+
+            if (isValid) {
               handleScan(result.getText());
             } else {
               setError("That is not a valid Tracking Number");

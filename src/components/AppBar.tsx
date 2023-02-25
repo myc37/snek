@@ -9,9 +9,13 @@ const AppBar: FC = () => {
     <div className="fixed bottom-0 left-0 z-10 flex h-16 w-screen items-center justify-around bg-gradient-to-b from-primary-light to-primary px-6">
       <div
         className={`flex cursor-pointer flex-col items-center ${
-          router.pathname === "/earnings" ? "text-white" : "text-gray"
+          router.pathname === "/earnings"
+            ? "text-white"
+            : "text-gray animate-bounce"
         }`}
-        onClick={() => void router.push("/earnings")}
+        onClick={() => {
+          void router.push("/earnings");
+        }}
       >
         <BiDollar className="text-3xl" />
         Earnings

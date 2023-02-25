@@ -5,6 +5,7 @@ import { PackageBonusType } from "@prisma/client";
 import type { NextPage } from "next";
 import { Fade } from "react-awesome-reveal";
 import CountUp from "react-countup";
+import { BiChevronsUp } from "react-icons/bi";
 import AppBar from "~/components/AppBar";
 import Container from "~/components/Container";
 import Error from "~/components/Error";
@@ -103,7 +104,7 @@ const History: NextPage = () => {
     <>
       <AppBar />
       <Container className="flex h-screen flex-col items-center justify-center bg-opacity-70 bg-gradient-radial">
-        <div className="relative -top-20">
+        <div className=" relative -top-28">
           <div className="absolute -top-[450%] left-0 right-0 mx-auto flex animate-float flex-col items-center justify-center">
             <div className="w-36">
               <Fade delay={400} triggerOnce>
@@ -181,6 +182,10 @@ const History: NextPage = () => {
                 Novice Ninja
               </div>
             </Fade>
+          </div>
+          <div className="text-yellow absolute top-[450px] left-0 right-0 mx-auto flex animate-bounce flex-col items-center text-yellow-400">
+            Scroll down
+            <BiChevronsUp className="rotate-180 text-3xl text-yellow-400" />
           </div>
         </div>
       </Container>

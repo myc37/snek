@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Transition, Dialog, Listbox } from "@headlessui/react";
 import { type Parcel, ParcelStatus, type FailureReason } from "@prisma/client";
+import { message } from "antd";
 import { Fragment, useState, type FC } from "react";
 import { BiCheck, BiChevronDown } from "react-icons/bi";
 import { api } from "~/utils/api";
@@ -10,14 +11,22 @@ type Props = {
   isOpen: boolean;
   handleCloseReportIssue: () => void;
   parcel: Parcel;
+  refetch: () => void;
 };
 
-const ReportIssue: FC<Props> = ({ isOpen, handleCloseReportIssue, parcel }) => {
+const ReportIssue: FC<Props> = ({
+  isOpen,
+  handleCloseReportIssue,
+  parcel,
+  refetch,
+}) => {
   const updateStatus = api.parcels.updateStatusByTrackingNumber.useMutation();
+  const [messageApi, contextHolder] = message.useMessage();
   const [issueReason, setIssueReason] = useState<FailureReason>("NOT_HOME");
   const [isLoading, setIsLoading] = useState(false);
 
   const reportIssue = () => {
+    setIsLoading(true);
     updateStatus.mutate(
       {
         trackingNumber: parcel.trackingNumber,
@@ -25,9 +34,10 @@ const ReportIssue: FC<Props> = ({ isOpen, handleCloseReportIssue, parcel }) => {
       },
       {
         onSuccess: () => {
-          handleCloseReportIssue();
-          window.location.reload();
+          void messageApi.success("Successfully reported an issue");
           setIsLoading(false);
+          refetch();
+          handleCloseReportIssue();
         },
       }
     );
@@ -72,9 +82,11 @@ const ReportIssue: FC<Props> = ({ isOpen, handleCloseReportIssue, parcel }) => {
                   as="h3"
                   className="text-lg font-bold leading-6 text-gray-900"
                 >
-                  Confirming contactless delivery
+                  {contextHolder}
+                  Reporting issue
                   <div className="mt-1 text-sm text-gray-600">
-                    Please take photos of the parcel, unit number, and floormat
+                    Please select the reason why the parcel you are unable to
+                    deliver the parcel
                   </div>
                 </Dialog.Title>
                 <div className="my-4">
