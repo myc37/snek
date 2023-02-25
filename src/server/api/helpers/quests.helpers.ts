@@ -1,5 +1,6 @@
 import type { FeQuest } from "~/types/quests";
 import { prisma } from "~/server/db";
+import { getDateRange } from "./date.helpers";
 
 export const getAllQuestsForDriver = async (driverId: string) => {
   const driver = await prisma.driver.findUnique({
@@ -18,6 +19,7 @@ export const getAllQuestInstancesForDriver = async (driverId: string) => {
   const result: FeQuest[] = [];
 
   const quests = await getAllQuestsForDriver(driverId);
+  const { start, end } = getDateRange();
 
   for (const quest of quests) {
     const {
@@ -33,7 +35,7 @@ export const getAllQuestInstancesForDriver = async (driverId: string) => {
         questId,
         driverId,
         ...(frequency == "DAILY"
-          ? { date: new Date() }
+          ? { date: { gte: start, lt: end } }
           : { isCompleted: false }),
       },
     });

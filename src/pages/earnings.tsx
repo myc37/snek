@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { NextPage } from "next";
 import AppBar from "~/components/AppBar";
 import Container from "~/components/Container";
@@ -14,39 +16,81 @@ import { addCurrency, formatNumbersWithCommas } from "~/utils/numbers";
 
 const History: NextPage = () => {
   const currentMonth = months[new Date().getMonth()] as Month;
-  const potentialEarnings = 3700;
+  const { data: potentialEarnings, isLoading: isLoadingMinimumGoal } =
+    api.drivers.getMinimumGoalByDriverId.useQuery({
+      driverId: DUMMY_DRIVER_ID,
+    });
 
-  const barProgress = Math.round(Math.random() * 100 + 1);
-  const basePay = 2500;
+  const { data: parcelsCompleted, isLoading: isLoadingCompleted } =
+    api.parcels.getCompletedByDriverId.useQuery({
+      driverId: DUMMY_DRIVER_ID,
+    });
+
+  const { data: countryConfig, isLoading: isLoadingConfig } =
+    api.config.getConfigByCountry.useQuery({ country: "SG" });
+  const basePay = countryConfig?.vehicleConfig.VAN.baseSalary ?? 2500;
+
+  const parcelMinGoal =
+    ((
+      Object.entries(
+        countryConfig?.vehicleConfig.VAN.incentivePayStructure ??
+          ({} as Record<number, number>)
+      ) as number[][]
+    ).find(([_, val]) => val === 0) ?? [])[0] ?? 200;
+
+  const barProgress =
+    (parcelsCompleted ? parcelsCompleted.length : 130 / parcelMinGoal) * 100;
+
   const { data: quantityBonus, isLoading: isLoadingQuantityBonus } =
     api.drivers.getQtyBonusByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,
     });
 
-  const bonusRecords = [[25, "L parcel", 2.5, 50]];
-  const { data: typeBonus, isLoading: isLoadingTypeBonus } =
+  const { data: bonusData, isLoading: isLoadingTypeBonus } =
     api.drivers.getTypeBonusByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,
     });
+  const { bonusesTotal, bonusesArray } = bonusData ?? {
+    bonusesTotal: 0,
+    bonusesArray: [],
+  };
 
-  const questBonus = 200;
-  const questRecords: string[] = [];
+  const { data: questData } =
+    api.quests.getQuestTotalAndArrayByDriverId.useQuery({
+      driverId: DUMMY_DRIVER_ID,
+    });
+  const { questTotal, questArray } = questData ?? {
+    questTotal: 0,
+    questArray: [],
+  };
 
-  const infractionRecords: string[] = [];
-  const { data: infractionAmount, isLoading: isLoadingInfractions } =
+  const { data: infractionData, isLoading: isLoadingInfractions } =
     api.drivers.getInfractionsByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,
     });
+  const { infractionTotal, infractionsArray } = infractionData ?? {
+    infractionTotal: 0,
+    infractionsArray: [],
+  };
 
   const isLoading =
-    isLoadingQuantityBonus || isLoadingTypeBonus || isLoadingInfractions;
+    isLoadingMinimumGoal ||
+    isLoadingCompleted ||
+    isLoadingConfig ||
+    isLoadingQuantityBonus ||
+    isLoadingTypeBonus ||
+    isLoadingInfractions;
 
   if (isLoading) {
     return <Loading />;
   } else if (
+    parcelsCompleted === undefined ||
+    potentialEarnings === undefined ||
     quantityBonus === undefined ||
-    typeBonus === undefined ||
-    infractionAmount === undefined
+    bonusesTotal === undefined ||
+    bonusesArray === undefined ||
+    infractionTotal === undefined ||
+    infractionsArray === undefined
   ) {
     return <Error />;
   }
@@ -97,20 +141,20 @@ const History: NextPage = () => {
       </Container>
       <TypeBonus
         currentMonth={currentMonth}
-        typeBonus={typeBonus}
-        bonusRecords={bonusRecords}
+        typeBonus={bonusesTotal}
+        bonusRecords={bonusesArray}
       />
 
       <QuestBonus
         currentMonth={currentMonth}
-        questBonus={questBonus}
-        questRecords={questRecords}
+        questBonus={questTotal}
+        questRecords={questArray}
       />
 
       <Infractions
         currentMonth={currentMonth}
-        infractionAmount={infractionAmount}
-        infractionRecords={infractionRecords}
+        infractionAmount={infractionTotal}
+        infractionRecords={infractionsArray}
       />
     </>
   );
