@@ -65,10 +65,16 @@ export const getAllQuestInstancesForDriver = async (driverId: string) => {
   return result;
 };
 
-export const getQuestBonusForDriver = async (driverId: string) => {
-  const completedQuestInstances = await prisma.questInstance.findMany({
+export const getCompletedQuestInstancesForDriver = async (driverId: string) => {
+  return await prisma.questInstance.findMany({
     where: { driverId, isCompleted: true },
     include: { quest: { select: { bonusAmount: true } } },
   });
+};
+
+export const getQuestBonusForDriver = async (driverId: string) => {
+  const completedQuestInstances = await getCompletedQuestInstancesForDriver(
+    driverId
+  );
   return completedQuestInstances.reduce((a, b) => a + b.quest.bonusAmount, 0);
 };

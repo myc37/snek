@@ -19,13 +19,13 @@ const History: NextPage = () => {
   const barProgress = Math.round(Math.random() * 100 + 1);
   const basePay = 2500;
   const { data: quantityBonus, isLoading: isLoadingQuantityBonus } =
-    api.driver.getQtyBonusByDriverId.useQuery({
+    api.drivers.getQtyBonusByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,
     });
 
   const bonusRecords = [[25, "L parcel", 2.5, 50]];
   const { data: typeBonus, isLoading: isLoadingTypeBonus } =
-    api.driver.getTypeBonusByDriverId.useQuery({
+    api.drivers.getTypeBonusByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,
     });
 
@@ -34,7 +34,7 @@ const History: NextPage = () => {
 
   const infractionRecords: string[] = [];
   const { data: infractionAmount, isLoading: isLoadingInfractions } =
-    api.driver.getInfractionsByDriverId.useQuery({
+    api.drivers.getInfractionsByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,
     });
 
