@@ -47,5 +47,6 @@ export const questsRouter = createTRPCRouter({
         pDriver,
         pQuestProgressions,
       ]);
+      return [driver, questProgressions];
     }),
 });
