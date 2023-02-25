@@ -82,9 +82,9 @@ const Contactless: FC<Props> = ({ isOpen, handleCloseContactless }) => {
                 <div className="my-4">
                   <Webcam
                     ref={ref}
-                    // videoConstraints={{
-                    //   facingMode: { exact: "environment" },
-                    // }}
+                    videoConstraints={{
+                      facingMode: { exact: "environment" },
+                    }}
                   />
                 </div>
                 <div className="flex w-full flex-wrap gap-2">
