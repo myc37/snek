@@ -31,7 +31,8 @@ const RewardTrack: FC<Props> = ({ data }) => {
   const isBronze =
     !isSilver &&
     data.progression.currentProgression >= data.rewardTrack.bronzeThreshold;
-  const isNoProgress = data.progression.currentProgression === 0;
+  const isNoBadge =
+    data.progression.currentProgression < data.rewardTrack.bronzeThreshold;
 
   return (
     <div className="mb-4 flex flex-col rounded-md border-2 border-white bg-white p-4 shadow-md">
@@ -52,10 +53,10 @@ const RewardTrack: FC<Props> = ({ data }) => {
             src="ninja-badge.png"
             alt="inja badge"
             className={`absolute top-0 w-16 sepia ${
-              isNoProgress ? "brightness-[15%]" : ""
+              isNoBadge ? "brightness-[15%]" : ""
             }`}
           />
-          {isNoProgress ? (
+          {isNoBadge ? (
             <div className="absolute top-[25%] left-0 z-30 w-16 text-center  text-2xl text-white">
               ?
             </div>
