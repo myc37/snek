@@ -57,7 +57,7 @@ const Orders: NextPage = () => {
 
   if (isLoading) {
     return <Loading />;
-  } else if (parcels === undefined || true) {
+  } else if (parcels === undefined) {
     return <Error />;
   }
 
