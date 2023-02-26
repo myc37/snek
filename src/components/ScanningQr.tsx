@@ -38,7 +38,6 @@ const ScanningQr: FC<Props> = ({ isOpen, handleCloseScanQr, handleScan }) => {
             if (!result) {
               return;
             }
-            console.log(result.getText());
             let isValid = false;
             try {
               new URL(result.getText());
