@@ -47,13 +47,18 @@ const Signing: FC<Props> = ({ isOpen, handleCloseSigning, parcel }) => {
     window.location.reload();
   };
 
+  const closeAndReset = () => {
+    clearSignaturePad();
+    handleCloseSigning();
+  };
+
   if (!isOpen) {
     return <></>;
   }
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={handleCloseSigning}>
+      <Dialog as="div" className="relative z-10" onClose={closeAndReset}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -88,9 +93,9 @@ const Signing: FC<Props> = ({ isOpen, handleCloseSigning, parcel }) => {
                 <div className="flex w-full gap-4">
                   <button
                     className="w-full rounded-md border-2 border-primary bg-white px-4 py-2 text-primary"
-                    onClick={clearSignaturePad}
+                    onClick={closeAndReset}
                   >
-                    Reset
+                    Cancel
                   </button>
                   <button
                     className="w-full rounded-md border-2 border-primary bg-primary px-4 py-2 text-gray-1"

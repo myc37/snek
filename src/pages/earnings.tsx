@@ -1,11 +1,18 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Disclosure } from "@headlessui/react";
+import { Disclosure, Transition } from "@headlessui/react";
 import { PackageBonusType } from "@prisma/client";
 import type { NextPage } from "next";
 import { Fade } from "react-awesome-reveal";
 import CountUp from "react-countup";
-import { BiChevronsUp } from "react-icons/bi";
+import {
+  BiChevronDown,
+  BiChevronsUp,
+  BiPlus,
+  BiPlusCircle,
+} from "react-icons/bi";
 import AppBar from "~/components/AppBar";
 import Container from "~/components/Container";
 import Error from "~/components/Error";
@@ -44,6 +51,11 @@ const History: NextPage = () => {
   const barProgress =
     ((parcelsCompleted ? parcelsCompleted.length : 130) / parcelMinGoal) * 100;
 
+  const { data: questBonus, isLoading: isLoadingQuestBonus } =
+    api.quests.getQuestBonusByDriverId.useQuery({
+      driverId: DUMMY_DRIVER_ID,
+    });
+
   const { data: quantityBonus, isLoading: isLoadingQuantityBonus } =
     api.drivers.getQtyBonusByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,
@@ -72,11 +84,13 @@ const History: NextPage = () => {
     isLoadingConfig ||
     isLoadingQuantityBonus ||
     isLoadingTypeBonus ||
-    isLoadingInfractions;
+    isLoadingInfractions ||
+    isLoadingQuestBonus;
 
   if (isLoading) {
     return <Loading />;
   } else if (
+    questBonus === undefined ||
     parcelsCompleted === undefined ||
     quantityBonus === undefined ||
     bonusesTotal === undefined ||
@@ -199,128 +213,221 @@ const History: NextPage = () => {
         <div className="rounded-md bg-white p-4">
           <div className="text-xl font-bold">Breakdown</div>
           <hr className="my-4" />
-          <div className="flex flex-col gap-3">
-            <div className="flex justify-between">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-3">
               <div className="font-bold text-gray-600 opacity-90">Base pay</div>
-              <div>{addCurrency(formatNumbersWithCommas(basePay), "SG")}</div>
+              <div className="ml-auto">
+                {addCurrency(formatNumbersWithCommas(basePay), "SG")}
+              </div>
+              <div className="button invisible rounded-md bg-primary p-2 text-white">
+                <BiChevronDown className="invisible" />
+              </div>
             </div>
             <Disclosure>
-              <Disclosure.Button>
-                <div className="flex justify-between">
-                  <div className="font-bold text-gray-600 opacity-90">
-                    Rank bonus
-                  </div>
-                  <div className="underline">
-                    {addCurrency(formatNumbersWithCommas(67), "SG")}
-                  </div>
-                </div>
-              </Disclosure.Button>
-              <Disclosure.Panel>
-                <div className="mb-2 flex flex-col gap-2 text-sm text-gray-600 opacity-70">
-                  <div className="flex justify-between">
-                    <div>100 parcels x $0.20 (Novice)</div>
-                    <div>$50</div>
-                  </div>
-                  <div className="flex justify-between">
-                    <div>134 parcels x $0.50 (Apprentice)</div>
-                    <div>$67</div>
-                  </div>
-                </div>
-              </Disclosure.Panel>
+              {({ open }) => (
+                <>
+                  <Disclosure.Button>
+                    <div className="flex items-center gap-3">
+                      <div className="font-bold text-gray-600 opacity-90">
+                        Rank bonus
+                      </div>
+                      <div className="ml-auto">
+                        {addCurrency(formatNumbersWithCommas(67), "SG")}
+                      </div>
+                      <div className="button rounded-md bg-primary p-2 text-white ">
+                        <BiChevronDown
+                          className={`${
+                            open ? "rotate-180" : ""
+                          } transition-all`}
+                        />
+                      </div>
+                    </div>
+                  </Disclosure.Button>
+                  <Transition
+                    enter="transition duration-100 ease-out"
+                    enterFrom="transform scale-95 opacity-0"
+                    enterTo="transform scale-100 opacity-100"
+                    leave="transition duration-75 ease-out"
+                    leaveFrom="transform scale-100 opacity-100"
+                    leaveTo="transform scale-95 opacity-0"
+                  >
+                    <Disclosure.Panel>
+                      <div className="mb-2 flex flex-col gap-2 text-sm text-gray-600 opacity-70">
+                        <div className="flex justify-between">
+                          <div>100 parcels x $0.20 (Novice)</div>
+                          <div>$50</div>
+                        </div>
+                        <div className="flex justify-between">
+                          <div>134 parcels x $0.50 (Apprentice)</div>
+                          <div>$67</div>
+                        </div>
+                      </div>
+                    </Disclosure.Panel>
+                  </Transition>
+                </>
+              )}
             </Disclosure>
             <Disclosure>
-              <Disclosure.Button>
-                <div className="flex justify-between">
-                  <div className="font-bold text-gray-600 opacity-90">
-                    Type bonus
-                  </div>
-                  <div className="underline">
-                    {addCurrency(formatNumbersWithCommas(bonusesTotal), "SG")}
-                  </div>
-                </div>
-              </Disclosure.Button>
-              <Disclosure.Panel>
-                <div className="mb-2 flex flex-col gap-2 text-sm text-gray-600 opacity-70">
-                  {bonusesArray.map((record, idx) => (
-                    <div key={idx} className="flex justify-between">
-                      <div>{`${record[0] ?? ""} ${
-                        mapBonusType(record[1]) ?? ""
-                      } x ${addCurrency(
-                        formatNumbersWithCommas(record[2] ?? 0),
-                        "SG"
-                      )}`}</div>
-                      <div>{`${addCurrency(
-                        formatNumbersWithCommas(record[3] ?? 0),
-                        "SG"
-                      )}`}</div>
+              {({ open }) => (
+                <>
+                  <Disclosure.Button>
+                    <div className="flex items-center gap-3">
+                      <div className="font-bold text-gray-600 opacity-90">
+                        Type bonus
+                      </div>
+                      <div className="ml-auto">
+                        {addCurrency(
+                          formatNumbersWithCommas(bonusesTotal),
+                          "SG"
+                        )}
+                      </div>
+                      <div className="button rounded-md bg-primary p-2 text-white ">
+                        <BiChevronDown
+                          className={`${
+                            open ? "rotate-180" : ""
+                          } transition-all`}
+                        />
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </Disclosure.Panel>
+                  </Disclosure.Button>
+                  <Transition
+                    enter="transition duration-100 ease-out"
+                    enterFrom="transform scale-95 opacity-0"
+                    enterTo="transform scale-100 opacity-100"
+                    leave="transition duration-75 ease-out"
+                    leaveFrom="transform scale-100 opacity-100"
+                    leaveTo="transform scale-95 opacity-0"
+                  >
+                    <Disclosure.Panel>
+                      <div className="mb-2 flex flex-col gap-2 text-sm text-gray-600 opacity-70">
+                        {bonusesArray.map((record, idx) => (
+                          <div key={idx} className="flex justify-between">
+                            <div>{`${record[0] ?? ""} ${
+                              mapBonusType(record[1]) ?? ""
+                            } x ${addCurrency(
+                              formatNumbersWithCommas(record[2] ?? 0),
+                              "SG"
+                            )}`}</div>
+                            <div>{`${addCurrency(
+                              formatNumbersWithCommas(record[3] ?? 0),
+                              "SG"
+                            )}`}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </Disclosure.Panel>
+                  </Transition>
+                </>
+              )}
             </Disclosure>{" "}
             <Disclosure>
-              <Disclosure.Button>
-                <div className="flex justify-between">
-                  <div className="font-bold text-gray-600 opacity-90">
-                    Quest bonus
-                  </div>
-                  <div className="underline">
-                    {addCurrency(formatNumbersWithCommas(49), "SG")}
-                  </div>
-                </div>
-              </Disclosure.Button>
-              <Disclosure.Panel>
-                <div className="mb-2 flex flex-col gap-2 text-sm text-gray-600 opacity-70">
-                  <div className="flex justify-between">
-                    <div>Daily: 18 attendance x $0.50</div>
-                    <div>$9</div>
-                  </div>
-                  <div className="flex justify-between">
-                    <div>Daily: 10 90% successful x $3.00</div>
-                    <div>$30</div>
-                  </div>
-                  <div className="flex justify-between">
-                    <div>Repeatable: 2 25 successful x $5.00</div>
-                    <div>$10</div>
-                  </div>
-                </div>
-              </Disclosure.Panel>
+              {({ open }) => (
+                <>
+                  <Disclosure.Button>
+                    <div className="flex items-center gap-3">
+                      <div className="font-bold text-gray-600 opacity-90">
+                        Quest bonus
+                      </div>{" "}
+                      <div className="ml-auto">
+                        {" "}
+                        {addCurrency(formatNumbersWithCommas(49), "SG")}
+                      </div>
+                      <div className="button rounded-md bg-primary p-2 text-white ">
+                        <BiChevronDown
+                          className={`${
+                            open ? "rotate-180" : ""
+                          } transition-all`}
+                        />
+                      </div>
+                    </div>
+                  </Disclosure.Button>
+                  <Transition
+                    enter="transition duration-100 ease-out"
+                    enterFrom="transform scale-95 opacity-0"
+                    enterTo="transform scale-100 opacity-100"
+                    leave="transition duration-75 ease-out"
+                    leaveFrom="transform scale-100 opacity-100"
+                    leaveTo="transform scale-95 opacity-0"
+                  >
+                    <Disclosure.Panel>
+                      <div className="mb-2 flex flex-col gap-2 text-sm text-gray-600 opacity-70">
+                        {questBonus?.map((quest) => {
+                          return (
+                            <div
+                              key={quest.title}
+                              className="flex justify-between"
+                            >
+                              <div>{quest.title}</div>
+                              <div>
+                                {addCurrency(
+                                  formatNumbersWithCommas(quest.bonus),
+                                  "SG"
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </Disclosure.Panel>
+                  </Transition>
+                </>
+              )}
             </Disclosure>
             <Disclosure>
-              <Disclosure.Button>
-                <div className="flex justify-between">
-                  <div className="font-bold text-red-600 opacity-90">
-                    Penalties
-                  </div>
-                  <div className="underline">
-                    -
-                    {addCurrency(
-                      formatNumbersWithCommas(infractionTotal),
-                      "SG"
-                    )}
-                  </div>
-                </div>
-              </Disclosure.Button>
-              <Disclosure.Panel>
-                <div className="mb-2 flex flex-col gap-2 text-sm text-gray-600 opacity-70">
-                  {infractionsArray.map((infraction, idx) => (
-                    <div key={idx} className="flex justify-between">
-                      <div>
-                        {`${infraction[0] ?? ""} ${mapInfractionType(
-                          infraction[1]
-                        )} x -${addCurrency(
-                          formatNumbersWithCommas(infraction[2] ?? 0),
-                          "SG"
-                        )}`}
+              {({ open }) => (
+                <>
+                  <Disclosure.Button>
+                    <div className="flex items-center gap-3">
+                      <div className="font-bold text-red-600 opacity-90">
+                        Penalties
                       </div>
-                      <div>{`-${addCurrency(
-                        formatNumbersWithCommas(infraction[3] ?? 0),
-                        "SG"
-                      )}`}</div>
+                      <div className="ml-auto">
+                        -
+                        {addCurrency(
+                          formatNumbersWithCommas(infractionTotal),
+                          "SG"
+                        )}
+                      </div>{" "}
+                      <div className="button rounded-md bg-primary p-2 text-white ">
+                        <BiChevronDown
+                          className={`${
+                            open ? "rotate-180" : ""
+                          } transition-all`}
+                        />
+                      </div>
                     </div>
-                  ))}
-                </div>
-              </Disclosure.Panel>
+                  </Disclosure.Button>
+                  <Transition
+                    enter="transition duration-100 ease-out"
+                    enterFrom="transform scale-95 opacity-0"
+                    enterTo="transform scale-100 opacity-100"
+                    leave="transition duration-75 ease-out"
+                    leaveFrom="transform scale-100 opacity-100"
+                    leaveTo="transform scale-95 opacity-0"
+                  >
+                    <Disclosure.Panel>
+                      <div className="mb-2 flex flex-col gap-2 text-sm text-gray-600 opacity-70">
+                        {infractionsArray.map((infraction, idx) => (
+                          <div key={idx} className="flex justify-between">
+                            <div>
+                              {`${infraction[0] ?? ""} ${mapInfractionType(
+                                infraction[1]
+                              )} x -${addCurrency(
+                                formatNumbersWithCommas(infraction[2] ?? 0),
+                                "SG"
+                              )}`}
+                            </div>
+                            <div>{`-${addCurrency(
+                              formatNumbersWithCommas(infraction[3] ?? 0),
+                              "SG"
+                            )}`}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </Disclosure.Panel>
+                  </Transition>
+                </>
+              )}
             </Disclosure>
           </div>
         </div>
