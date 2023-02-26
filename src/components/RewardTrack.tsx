@@ -75,8 +75,8 @@ const RewardTrack: FC<Props> = ({ data }) => {
       <div className="mb-8 text-sm">{data.rewardTrack.description}</div>
       <div className="relative h-8 w-full rounded-xl border-2 border-black">
         <div
-          className={`absolute top-0 left-0 bottom-0 m-[2px] max-w-[99%] rounded-tl-lg rounded-bl-lg bg-red-600 ${
-            isGold ? "rounded-tr-lg rounded-br-lg bg-green-800" : ""
+          className={`absolute top-0 left-0 bottom-0 m-[2px] max-w-[99%] rounded-tl-lg rounded-bl-lg ${
+            isGold ? "rounded-tr-lg rounded-br-lg bg-green-700" : "bg-red-600"
           }`}
           style={{ width: `${progressionDistance}%` }}
         />
