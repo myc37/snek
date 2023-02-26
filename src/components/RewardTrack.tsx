@@ -75,7 +75,7 @@ const RewardTrack: FC<Props> = ({ data }) => {
       <div className="relative h-8 w-full rounded-xl border-2 border-black">
         <div
           className={`absolute top-0 left-0 bottom-0 m-[2px] max-w-[99%] rounded-tl-lg rounded-bl-lg bg-red-600 ${
-            isGold ? "rounded-tr-lg rounded-br-lg" : ""
+            isGold ? "rounded-tr-lg rounded-br-lg bg-green-800" : ""
           }`}
           style={{ width: `${progressionDistance}%` }}
         />
@@ -112,14 +112,20 @@ const RewardTrack: FC<Props> = ({ data }) => {
           style={{ left: `${progressionDistance}%` }}
         />
       </div>
-      <div className="mt-8 text-center text-sm font-light">
-        {(isSilver
-          ? data.rewardTrack.goldThreshold
-          : isBronze
-          ? data.rewardTrack.silverThreshold
-          : data.rewardTrack.bronzeThreshold) -
-          data.progression.currentProgression}{" "}
-        more deliveries to next badge!
+      <div className="mt-12 text-center text-sm font-light">
+        {isGold ? (
+          <div>Completed!</div>
+        ) : (
+          <>
+            {(isSilver
+              ? data.rewardTrack.goldThreshold
+              : isBronze
+              ? data.rewardTrack.silverThreshold
+              : data.rewardTrack.bronzeThreshold) -
+              data.progression.currentProgression}{" "}
+            more deliveries to next badge!
+          </>
+        )}
       </div>
     </div>
   );
