@@ -31,6 +31,41 @@ export const parcelsRouter = createTRPCRouter({
         where: { trackingNumber: trackingNumber },
         data: { status },
       });
+
+      if (status !== ParcelStatus.DELIVERED) return parcel;
+
+      const questInstances = await prisma.questProgression.findMany({
+        where: {
+          driverId: parcel.driverId as string,
+          month: new Date().getMonth(),
+          year: new Date().getFullYear(),
+        },
+        include: { quest: true },
+      });
+
+      const promises = questInstances
+        .filter(
+          (instance) =>
+            instance.currentProgression !== instance.quest.goldReward &&
+            (instance.quest.title !== "Enthu Ninja" ||
+              [0, 6].includes(new Date().getDay()))
+        )
+        .map((instance) =>
+          prisma.questProgression.update({
+            where: {
+              questId_driverId_month_year: {
+                questId: instance.questId,
+                driverId: instance.driverId,
+                month: instance.month,
+                year: instance.year,
+              },
+            },
+            data: { currentProgression: { increment: 1 } },
+          })
+        );
+
+      await Promise.all(promises);
+
       return parcel;
     }),
 });

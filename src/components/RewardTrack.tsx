@@ -34,7 +34,7 @@ const RewardTrack: FC<Props> = ({ data }) => {
   const isNoProgress = data.progression.currentProgression === 0;
 
   return (
-    <div className="flex flex-col rounded-md border-2 border-white bg-white p-4 shadow-md">
+    <div className="mb-4 flex flex-col rounded-md border-2 border-white bg-white p-4 shadow-md">
       <div className="mb-4 flex">
         <div className="relative mr-4 h-16 w-16">
           <div
@@ -66,7 +66,7 @@ const RewardTrack: FC<Props> = ({ data }) => {
         <div className="flex h-12 flex-col justify-evenly">
           <div className="font-space-mission">{data.rewardTrack.title}</div>
           <div className="text-xs font-light">
-            {isGold ? "gold" : isSilver ? "silver" : isBronze ? "bronze" : "no"}{" "}
+            {isGold ? "Gold" : isSilver ? "Silver" : isBronze ? "Bronze" : "No"}{" "}
             badge achieved
           </div>
         </div>
@@ -84,9 +84,27 @@ const RewardTrack: FC<Props> = ({ data }) => {
           style={{ left: `${bronzeDistance}%` }}
         />
         <div
+          className={`absolute top-[130%] text-sm font-bold text-green-600`}
+          style={{ left: `${parseInt(bronzeDistance) - 7}%` }}
+        >
+          +${data.rewardTrack.bronzeReward}
+        </div>
+        <div
           className={`absolute -top-[33%] h-12 w-[2px] bg-zinc-600`}
           style={{ left: `${silverDistance}%` }}
         />
+        <div
+          className={`absolute top-[130%] text-sm font-bold text-green-600`}
+          style={{ left: `${parseInt(silverDistance) - 7}%` }}
+        >
+          +${data.rewardTrack.silverReward}
+        </div>
+        <div
+          className={`absolute top-[130%] text-sm font-bold text-green-600`}
+          style={{ left: `90%` }}
+        >
+          +${data.rewardTrack.goldReward}
+        </div>
         <img
           src="ninja-van.png"
           alt="van van"
@@ -94,7 +112,7 @@ const RewardTrack: FC<Props> = ({ data }) => {
           style={{ left: `${progressionDistance}%` }}
         />
       </div>
-      <div className="mt-4 text-center text-sm font-light">
+      <div className="mt-8 text-center text-sm font-light">
         {(isSilver
           ? data.rewardTrack.goldThreshold
           : isBronze
