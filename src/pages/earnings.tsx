@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Disclosure, Transition } from "@headlessui/react";
@@ -49,6 +51,11 @@ const History: NextPage = () => {
   const barProgress =
     ((parcelsCompleted ? parcelsCompleted.length : 130) / parcelMinGoal) * 100;
 
+  const { data: questBonus, isLoading: isLoadingQuestBonus } =
+    api.quests.getQuestBonusByDriverId.useQuery({
+      driverId: DUMMY_DRIVER_ID,
+    });
+
   const { data: quantityBonus, isLoading: isLoadingQuantityBonus } =
     api.drivers.getQtyBonusByDriverId.useQuery({
       driverId: DUMMY_DRIVER_ID,
@@ -77,11 +84,13 @@ const History: NextPage = () => {
     isLoadingConfig ||
     isLoadingQuantityBonus ||
     isLoadingTypeBonus ||
-    isLoadingInfractions;
+    isLoadingInfractions ||
+    isLoadingQuestBonus;
 
   if (isLoading) {
     return <Loading />;
   } else if (
+    questBonus === undefined ||
     parcelsCompleted === undefined ||
     quantityBonus === undefined ||
     bonusesTotal === undefined ||
@@ -342,18 +351,22 @@ const History: NextPage = () => {
                   >
                     <Disclosure.Panel>
                       <div className="mb-2 flex flex-col gap-2 text-sm text-gray-600 opacity-70">
-                        <div className="flex justify-between">
-                          <div>Daily: 18 attendance x $0.50</div>
-                          <div>$9</div>
-                        </div>
-                        <div className="flex justify-between">
-                          <div>Daily: 10 90% successful x $3.00</div>
-                          <div>$30</div>
-                        </div>
-                        <div className="flex justify-between">
-                          <div>Repeatable: 2 25 successful x $5.00</div>
-                          <div>$10</div>
-                        </div>
+                        {questBonus?.map((quest) => {
+                          return (
+                            <div
+                              key={quest.title}
+                              className="flex justify-between"
+                            >
+                              <div>{quest.title}</div>
+                              <div>
+                                {addCurrency(
+                                  formatNumbersWithCommas(quest.bonus),
+                                  "SG"
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </Disclosure.Panel>
                   </Transition>
