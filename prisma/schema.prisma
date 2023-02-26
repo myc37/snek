@@ -48,7 +48,6 @@ model QuestProgression {
   year               Int
 
   @@id([questId, driverId, month, year])
-  @@unique([month, year])
 }
 
 model Parcel {

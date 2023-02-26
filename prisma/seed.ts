@@ -177,6 +177,7 @@ async function main() {
         vehicleType: "VAN",
         minimumGoal: 50,
         country: "SG",
+        id: "1",
       },
     })
     .then(async (driver) => {
@@ -233,6 +234,58 @@ async function main() {
         });
         if (!parcel) throw new Error(`parcel ${i} not created`);
       }
+    });
+
+  await prisma.quest
+    .create({
+      data: {
+        title: "Enthu Ninja",
+        description:
+          "Complete deliveries on weekends or public holidays to earn progression for this quest",
+        bronzeThreshold: 10,
+        bronzeReward: 10,
+        silverThreshold: 20,
+        silverReward: 20,
+        goldThreshold: 30,
+        goldReward: 30,
+      },
+    })
+    .then(async (quest) => {
+      await prisma.questProgression.create({
+        data: {
+          quest: { connect: { id: quest.id } },
+          driver: { connect: { id: "1" } },
+          currentProgression: 0,
+          month: new Date().getMonth(),
+          year: new Date().getFullYear(),
+        },
+      });
+    });
+
+  await prisma.quest
+    .create({
+      data: {
+        title: "Successful Ninja",
+        description:
+          "Complete successful deliveries to earn progression for this quest",
+        bronzeThreshold: 100,
+        bronzeReward: 10,
+        silverThreshold: 200,
+        silverReward: 25,
+        goldThreshold: 300,
+        goldReward: 45,
+      },
+    })
+    .then(async (quest) => {
+      await prisma.questProgression.create({
+        data: {
+          quest: { connect: { id: quest.id } },
+          driver: { connect: { id: "1" } },
+          currentProgression: 0,
+          month: new Date().getMonth(),
+          year: new Date().getFullYear(),
+        },
+      });
     });
 }
 
