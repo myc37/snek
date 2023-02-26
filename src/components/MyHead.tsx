@@ -56,7 +56,7 @@ const MyHead: FC = () => {
       />
       <link rel="manifest" href="/manifest.json" />
       <link rel="mask-icon" href="icons/maskable_icon.png" color="#C2002F" />
-      <link rel="shortcut icon" href="/favicon.ico" />
+      <link rel="shortcut icon" href="icons/152.png" type="image/png" />
       <link
         rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Roboto:300,400,500"

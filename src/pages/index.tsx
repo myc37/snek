@@ -22,7 +22,7 @@ const Home: NextPage = () => {
   };
 
   const handleClickLogin = () => {
-    if (username !== DUMMY_USERNAME && password !== DUMMY_PASSWORD) {
+    if (username !== DUMMY_USERNAME || password !== DUMMY_PASSWORD) {
       setError("The username or password you have input is wrong");
       return;
     }
@@ -33,6 +33,9 @@ const Home: NextPage = () => {
     <FullScreenContainer>
       <div className="flex h-full w-full flex-col items-center justify-center">
         <img src="nv-logo.png" alt="ninjavan logo" />
+        <div className="mb-8 -mt-8 bg-gradient-to-r from-secondary to-primary bg-clip-text text-3xl font-bold text-transparent">
+          Driver App
+        </div>
         <div className="flex w-full flex-col items-center justify-center gap-4 rounded-lg bg-primary px-8 pt-8 pb-12">
           <div className="flex w-full flex-col gap-2">
             <label className="text-gray-1">Username</label>
@@ -61,9 +64,6 @@ const Home: NextPage = () => {
         >
           Sign In
         </button>
-        <a className="mt-4 text-sm text-primary underline">
-          Forgot your password?
-        </a>
       </div>
     </FullScreenContainer>
   );
