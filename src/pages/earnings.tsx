@@ -330,7 +330,7 @@ const History: NextPage = () => {
                       </div>{" "}
                       <div className="ml-auto">
                         {" "}
-                        {addCurrency(formatNumbersWithCommas(49), "SG")}
+                        {addCurrency(formatNumbersWithCommas(55), "SG")}
                       </div>
                       <div className="button rounded-md bg-primary p-2 text-white ">
                         <BiChevronDown
