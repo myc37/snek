@@ -27,16 +27,17 @@ const ScanningQr: FC<Props> = ({ isOpen, handleCloseScanQr, handleScan }) => {
         onClick={closeAndReset}
       />
       <div className="w-full">
-        <div className="text-center text-xl">
+        <div className="mb-2 text-center text-xl">
           Scan a parcel&apos;s QR code to search for it
         </div>
         <QrReader
           constraints={{ facingMode: "environment" }}
+          videoStyle={{ width: "100%" }}
+          videoContainerStyle={{ width: "100%" }}
           onResult={(result) => {
             if (!result) {
               return;
             }
-            console.log(result.getText());
             let isValid = false;
             try {
               new URL(result.getText());

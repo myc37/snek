@@ -174,14 +174,20 @@ const History: NextPage = () => {
               </div>
             </Fade>
           </div>
-          <div className="text-yellow absolute top-[450px] left-0 right-0 mx-auto flex animate-bounce flex-col items-center text-yellow-400">
+          <a
+            className="text-yellow absolute top-[450px] left-0 right-0 mx-auto flex animate-bounce flex-col items-center text-yellow-400"
+            href="#breakdown"
+          >
             Scroll down
             <BiChevronsUp className="rotate-180 text-3xl text-yellow-400" />
-          </div>
+          </a>
         </div>
       </Container>
       <Container className="min-h-screen bg-background pb-20 pt-8">
-        <div className="mb-4 text-2xl font-bold">{`${currentMonth}'s earnings`}</div>
+        <div
+          className="mb-4 text-2xl font-bold"
+          id="breakdown"
+        >{`${currentMonth}'s earnings`}</div>
         <div className="mb-4 rounded-md bg-white p-4 shadow-md">
           <div>You are on track to earning</div>
           <div className="my-2 text-4xl">{`${addCurrency(

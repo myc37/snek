@@ -3,9 +3,11 @@
 @tailwind utilities;
 
 @layer base {
+  html,
   body {
     font-family: Inter, "Trebuchet MS", -apple-system, Arial, BlinkMacSystemFont,
       sans-serif;
+    scroll-behavior: smooth;
   }
 }
 
