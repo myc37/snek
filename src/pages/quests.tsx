@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import { Fade, Flip, Slide } from "react-awesome-reveal";
+import { Flip } from "react-awesome-reveal";
 import AppBar from "~/components/AppBar";
 import Container from "~/components/Container";
 import Error from "~/components/Error";
@@ -25,7 +25,7 @@ const Quests: NextPage = () => {
         <div className="mt-1 mb-4 text-sm font-light">
           Complete these to earn rewards!
         </div>
-        <Flip direction="horizontal" cascade>
+        <Flip direction="horizontal" cascade triggerOnce>
           {data?.map((doc) => (
             <RewardTrack key={doc.rewardTrack.id} data={doc} />
           ))}
